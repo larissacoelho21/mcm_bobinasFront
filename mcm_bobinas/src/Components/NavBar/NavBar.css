@@ -1,0 +1,79 @@
+.navbar {
+    padding: 1vw 0 1vw;
+}
+
+.navBarDefault {
+    display: flex;
+}
+
+ul {
+    list-style: none;
+    margin-left: 8vw;
+    margin-top: 1vw;
+}
+
+a {
+    text-decoration: none;
+}
+
+.left-side {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    margin-left: 3vw;
+    align-items: center;
+}
+
+.nav-logo img {
+    width: 0 auto;
+    height: 3vw;
+    margin-left: 1vw;
+    margin-bottom: 0.8vw;
+}
+
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    gap: 7vw;
+    padding: 0;
+}
+
+.linha {
+    border-bottom: #B4B4B4 solid 2px;
+    margin-top: -0.65vw;
+    position: relative;
+}
+
+ul p {
+    color: black;
+    font-weight: bold;
+    font-size: 0.9vw;
+    font-family: "Lexend Giga", sans-serif;
+    padding-bottom: 1.2vw;
+
+}
+
+ul p:hover {
+    color: var(--redDefault);
+    transition: 200ms ease-in-out;
+}
+
+.navbar-link.selected p {
+    border-bottom: #F44C4F solid 2px;
+    cursor: pointer;
+    transition: 200ms ease-in-out;
+    z-index: 1;
+    position: relative;
+
+}
+
+.navbar-link.active p {
+    border-bottom: var(--redDefault) solid 2px;
+    cursor: pointer;
+    transition: 200ms ease-in-out;
+    padding-bottom: 1.30vw;
+    z-index: 1;
+    position: relative;
+}
