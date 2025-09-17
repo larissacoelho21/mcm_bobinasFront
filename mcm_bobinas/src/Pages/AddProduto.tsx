@@ -57,7 +57,7 @@ export function AdicionarProduto() {
             <NavBar/>
         </div>
 
-      <div className="Container"> 
+        <div className="Container" >
             <div className="title">
                 <h2>Adicionar produto</h2>
             </div>
@@ -127,7 +127,7 @@ export function AdicionarProduto() {
                 Adicionar
                 </button>
             </form>
-       </div> 
+        </div> 
     </section>
   );
 };

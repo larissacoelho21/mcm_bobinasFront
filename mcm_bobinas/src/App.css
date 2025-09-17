@@ -1,28 +1,11 @@
 *{
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: "Poppins", system-ui;
-  background-color: #EFEFEF;
+  box-sizing: border-box;  
+  font-family: "Lexend Giga", sans-serif;
 }
 
 :root {
   --fonte: font-family: "Lexend Giga", sans-serif;
   --redDefault: #F44C4F;
 } 
-
-/* body::-webkit-scrollbar {
-  width: .9vw; 
-}
-
-body::-webkit-scrollbar-track {
-  background: #dcdcdc;
-  border: 1px #b1b1b1;
-}
-
-body::-webkit-scrollbar-thumb {
-  background-color: #07678D;
-  border-radius: 20px;
-  border: 1px solid #075a7b;
-} */
-
