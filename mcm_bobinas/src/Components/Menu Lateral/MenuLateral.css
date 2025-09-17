@@ -1,30 +1,28 @@
+body {
+  background-color: #EFEFEF;
+  font-family: "Lexend Giga", sans-serif;
+}
 
 .menu-lateral-container {
   position: fixed;
-  left: 1;
-  top: 100dw; 
-  width: 240px;
-  height: calc(90vh - 65px); 
-  background-color: lab(94.1% 0 -0.01);
+  left: 1.5vw;
+  width: 15vw;
+  height: 40vw;
+  margin-top: 1.3vw;
+  background-color: #FFF;
   padding: 20px 0;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.103);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  border-radius: 15px;
-  margin: 30px;
-  z-index: 100;
-}
-
-/* Seção do logo */
-.logo-section {
-  padding: 20px;
+  border-radius: 1vw;
 }
 
 .logo {
-  max-width: 100px;
+  max-width: 7vw;
   height: auto;
+  margin-bottom: 3vw;
 }
 
 /* Seção do menu de navegação */
@@ -38,16 +36,16 @@
 
 .menu-item {
   width: 100%;
-  padding: 15px 0;
-  text-align: center;
+  padding: 0.6vw 0;
+  text-align: start;
+  margin-left: 3vw;
   color: #000000;
-  font-size: 16px;
+  font-size: 0.8vw;
   text-decoration: none;
   transition: background-color 0.3s, color 0.3s;
 }
 
 .menu-item:hover {
-  background-color: lab(94.1% 0 -0.01);
   color: #c41717;
 }
 
@@ -55,14 +53,14 @@
 .logo {
   cursor: pointer;
   transition: transform 0.3s;
-  margin-top:  auto; 
-  
+  margin-top: auto;
+
 }
 
-.logo:hover {
-  transform: scale(1.09); 
-}
-
+/* .logo:hover {
+  transform: scale(1.09);
+} */
+/* 
 .upload-box {
   background: linear-gradient(135deg, #e4e3e3, #d0d0d0);
   border: 2px dashed #949393;
@@ -108,13 +106,4 @@
   font-size: 14px;
   color: #ffffff;
   margin: 0;
-}
-
-
-
-
-
-
-
-
-
+} */

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import "../Css/AddProduto.css"
 import { NavBar } from "../Components/NavBar/NavBar";
+import { MenuLateral } from "../Components/Menu Lateral/MenuLateral";
 
 type MateriaPrima = {
   id: number;
@@ -55,6 +56,10 @@ export function AdicionarProduto() {
     <section className="container">
         <div className="nav">
             <NavBar/>
+        </div>
+
+        <div className="menu">
+            <MenuLateral/>
         </div>
 
         <div className="Container" >

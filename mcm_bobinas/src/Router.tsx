@@ -12,10 +12,13 @@ const Router: React.FC = () => {
         {/* Home */}
         <Route path="/" element={<HomePage/>}></Route>
 
+         <Route path="/addproduto" element={<AdicionarProduto/>}></Route>
+         <Route path="/simulacaopedido" element={<SimulacaoPedido/>}></Route>
 
 
         {/* Components */}
         <Route path="/navbar" element={<NavBar/>}></Route>
+        <Route path="/menu" element={<MenuLateral/>}></Route>
       </Routes>
     </BrowserRouter>
   );
