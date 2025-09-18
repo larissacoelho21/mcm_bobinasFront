@@ -3,7 +3,7 @@ import { HomePage } from "./Pages/HomePage";
 import { NavBar } from "./Components/NavBar/NavBar";
 import { AdicionarProduto } from "./Pages/AddProduto";
 import { MenuLateral } from "./Components/Menu Lateral/MenuLateral";
-import { SimulacaoPedido } from "./Components/Simulacao Pedido/SimulacaoPedido";
+/* import { SimulacaoPedido } from "./Components/Simulacao Pedido/SimulacaoPedido"; */
 
 const Router: React.FC = () => {
   return (
@@ -13,7 +13,7 @@ const Router: React.FC = () => {
         <Route path="/" element={<HomePage/>}></Route>
 
          <Route path="/addproduto" element={<AdicionarProduto/>}></Route>
-         <Route path="/simulacaopedido" element={<SimulacaoPedido/>}></Route>
+         {/* <Route path="/simulacaopedido" element={<SimulacaoPedido/>}></Route> */}
 
 
         {/* Components */}

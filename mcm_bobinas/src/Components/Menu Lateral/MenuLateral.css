@@ -5,30 +5,30 @@ body {
 
 .menu-lateral-container {
   position: fixed;
-  left: 1.5vw;
-  width: 15vw;
-  height: 40vw;
-  margin-top: 1.3vw;
+  margin-top: 1.3vw;             /* distância do topo */
+  left: 1.5vw;          /* distância da lateral */
+  width: 16vw;          /* largura proporcional à tela */
+  height: 38vw;         /* ocupa 90% da altura */
   background-color: #FFF;
-  padding: 20px 0;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.103);
+  padding: 2vh 0;
+  box-shadow: 0 0.4vh 1.2vh rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  border-radius: 1vw;
+  border-radius: 1vw;   /* bordas arredondadas */
 }
 
 .logo {
-  max-width: 7vw;
+  max-width: 8vw;   /* imagem proporcional à tela */
   height: auto;
-  margin-bottom: 3vw;
+  margin-bottom: 2vw;
 }
 
 /* Seção do menu de navegação */
 .menu-section {
   width: 100%;
-  margin-top: 40px;
+  margin-top: 2vw;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -40,7 +40,7 @@ body {
   text-align: start;
   margin-left: 3vw;
   color: #000000;
-  font-size: 0.8vw;
+  font-size: 0.9vw;
   text-decoration: none;
   transition: background-color 0.3s, color 0.3s;
 }
@@ -50,16 +50,18 @@ body {
 }
 
 /* Seção de Upload de arquivo */
-.logo {
+.upload {
   cursor: pointer;
   transition: transform 0.3s;
-  margin-top: auto;
-
+  margin-top: 2vw;
+  max-width: 8vw;   /* imagem proporcional à tela */
+  height: auto;
 }
 
-/* .logo:hover {
-  transform: scale(1.09);
-} */
+
+.upload:hover {
+  transform: scale(1.03);
+} 
 /* 
 .upload-box {
   background: linear-gradient(135deg, #e4e3e3, #d0d0d0);

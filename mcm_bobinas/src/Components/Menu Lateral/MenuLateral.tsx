@@ -23,16 +23,11 @@ export function MenuLateral() {
           <a href="#" className="menu-item">
             Simulação pedido
           </a>
-          <br></br>
-          <br></br>
-          <br></br>
-          <br></br>
-          <br></br>
         </nav>
 
         {/* Seção de Upload */}
         <div className="logo-section">
-          <img src={upload} alt="MCM Bobinas Logo" className="logo" />
+          <img src={upload} alt="upload" className="upload" />
         </div>
       </section>
     </div>

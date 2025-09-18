@@ -1,8 +1,8 @@
 
 import { NavLink, Link } from 'react-router-dom';
 
-import './SimulacaoPedido.css';
-import '../NavBar/NavBar.css'; // Importa os estilos do menu lateral
+/* import './SimulacaoPedido.css';
+import '../NavBar/NavBar.css'; */ // Importa os estilos do menu lateral
 
 // Importe sua imagem de logo. Substitua o caminho abaixo pelo caminho real da sua imagem.
 import Nome from '../../assets/logo.svg';

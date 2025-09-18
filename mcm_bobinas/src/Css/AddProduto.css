@@ -5,7 +5,7 @@ body {
 
 div.Container {
     max-width: 80vw;
-    height: 40vw;
+    height: 38vw;
     position:static;    
     display: flex;
     flex-direction: column;
@@ -15,16 +15,31 @@ div.Container {
     border-radius: 1vw;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
     background-color: #FFFF !important;
+
+    overflow-y: auto;   /* ativa scroll vertical */
+    overflow-x: hidden; /* evita scroll lateral */
 }
 
+.title{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-.title h2 {
+.title1 h2 {
     text-align: center;
     font-size: 1.4vw;
     font-weight: 600;
     margin-top: 1vw;
     color: rgba(0, 0, 0, 0.60);
+    margin-right: 30vw;
 }
+
+.voltar {
+    display: flex;
+    justify-content: right;
+}
+
 
 .form {
     display: flex;
@@ -97,7 +112,7 @@ div.Container {
     background: none;
     border: none;
     color: #696969;
-    font-size: 0.8vw;
+    font-size: 0.9vw;
     font-weight: 600;
     cursor: pointer;
     transition: color 0.2s ease;
@@ -125,4 +140,38 @@ div.Container {
 
 .submit-button:hover {
     background: #555;
+}
+
+.botoes{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.remove-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+   margin-top: 0.5vw;
+}
+
+.remove-button p{
+    color: #696969;
+    font-size: 0.8vw;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 1vw;
+}
+
+.remove-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.icon-lixeira {
+  width: 1.5vw;  /* responsivo */
+  height: auto;
 }
