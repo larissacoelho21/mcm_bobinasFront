@@ -28,7 +28,7 @@ export function NavBar() {
                 >
                   <p className="parag">Início</p>
                 </NavLink>
-
+                
                 <NavLink
                   className={({ isActive }) =>
                     isActive ? "navbar-link active" : "navbar-link"
@@ -42,7 +42,7 @@ export function NavBar() {
                   className={({ isActive }) =>
                     isActive ? "navbar-link active" : "navbar-link"
                   }
-                  to={"#"}
+                  to={"/visualizarmateria"}
                 >
                   <p className="parag">Matérias Primas</p>
                 </NavLink>

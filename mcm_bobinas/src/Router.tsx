@@ -7,6 +7,7 @@ import { AdicionarNotaFiscal } from "./Pages/AddNotaFiscal";
 import { SimularPedido } from "./Pages/SimularProduto";
 import { VisualizarProduto } from "./Pages/VisualizarProduto";
 import { ListaProdutos } from "./Pages/ListaProduto";
+import { VisualizarMateriaPrima } from "./Pages/ListaMateriaPrima";
 /* import { SimulacaoPedido } from "./Components/Simulacao Pedido/SimulacaoPedido"; */
 
 const Router: React.FC = () => {
@@ -22,6 +23,7 @@ const Router: React.FC = () => {
         <Route path="/simularpedido" element={<SimularPedido/>}></Route>
         <Route path="/listaprodutos" element={<ListaProdutos/>}></Route>
         <Route path="/visualizarproduto" element={<VisualizarProduto/>}></Route>
+        <Route path="/visualizarmateria" element={<VisualizarMateriaPrima/>}></Route>
         
 
         {/* Components */}

@@ -26,18 +26,22 @@ export function ListaProdutos() {
     { codigo: 1008, nome: "Produto Sigma", valor: 80.0 },
     { codigo: 1009, nome: "Produto Kappa", valor: 92.1 },
     { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
+    { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
+    { codigo: 1009, nome: "Produto Kappa", valor: 92.1 },
+    { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
+    { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
   ];
 
   const handleVoltar = () => {
     navigate(-1);
   };
 
-  const handleClickProduto = (codigo: number) => {
-    navigate(`/produto/${codigo}`);
+  const handleClickProduto = () /* (codigo: number)  */ => {
+    navigate(/* `/produto/${codigo}` */ `/visualizarproduto`);
   };
 
   return (
-    <section className="container">
+    <div className="layout-container-produto">
       <div className="nav">
         <NavBar />
       </div>
@@ -46,54 +50,53 @@ export function ListaProdutos() {
         <MenuLateral />
       </div>
 
-      <div className="Container">
-        {/* Título */}
-        <div className="title">
-          <div className="img">
+      <div className="produto-container-produto">
+        {/* Cabeçalho isolado */}
+        <header className="header-produto">
+          <div className="header-col">
             <img
               src={Voltar}
               alt="Voltar"
               className="voltar"
               onClick={handleVoltar}
-              style={{ cursor: "pointer" }}
             />
+            <span>Cód</span>
           </div>
 
-          <div className="title1">
-            <h2>Lista de Produtos</h2>
+          <div className="nome-col">
+            <span>Nome Produto</span>
           </div>
+
+          <div className="valor-col">
+            <span>Valor unidade atualizado</span>
+          </div>
+        </header>
+
+        {/* Caixa da tabela */}
+        <div className="tabela-produto">
+          <table>
+            <tbody>
+              {produtos.map((produto) => (
+                <tr /* key={produto.codigo} */>
+                  <td className="codigo">{produto.codigo}</td>
+                  <td
+                    className="link-produto"
+                    onClick={() => handleClickProduto(/* produto.codigo */)}
+                  >
+                    {produto.nome}
+                  </td>
+                  <td className="preco">
+                    R${" "}
+                    {produto.valor.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-
-        {/* Tabela */}
-        <table className="tabela-produtos">
-          <thead>
-            <tr>
-              <th>Cód</th>
-              <th>Nome Produto</th>
-              <th>Valor unidade atualizado</th>
-            </tr>
-          </thead>
-          <tbody>
-            {produtos.map((produto) => (
-              <tr key={produto.codigo}>
-                <td className="codigo">{produto.codigo}</td>
-                <td
-                  className="link-produto"
-                  onClick={() => handleClickProduto(produto.codigo)}
-                >
-                  {produto.nome}
-                </td>
-                <td>
-                  R${" "}
-                  {produto.valor.toLocaleString("pt-BR", {
-                    minimumFractionDigits: 2,
-                  })}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
-    </section>
+    </div>
   );
 }

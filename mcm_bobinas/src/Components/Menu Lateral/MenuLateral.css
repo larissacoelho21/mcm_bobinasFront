@@ -75,11 +75,8 @@ body {
   cursor: pointer;
   transition: transform 0.3s;
   margin-top: 3vw;
-}
-
-.upload img {
-  height: auto;
-  max-width: 8.2vw;
+  max-width: auto;
+  height: 11vw;
 }
 
 

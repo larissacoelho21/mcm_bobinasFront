@@ -1,10 +1,109 @@
-/* ===== Variáveis de Cor ===== */
-/* :root {
-  --blue-one: #074973;
-  --blue-two: #07678d;
-  --blue-three: #00a3ff;
-  --gray-one: #bbbb;
-  --gray-two: #848484bb;
-  --white: #ffff;
-} */
+.layout-container-home {
+  background-color: #efefef;
+  font-family: "Lexend Giga", sans-serif;
+}
 
+.home-container {
+  max-width: 80vw;
+  height: 38vw;
+  position: static;
+  margin-top: 1.3vw;
+  margin-left: 18vw;
+  padding: 2vw;
+  border-radius: 1vw;
+  background-color: #fff;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.titulo {
+  text-align: center;
+  margin-top: 1.2vw;
+  font-size: 1.4vw;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.subtitulo {
+  text-align: center;
+  font-size: 1.5vw;
+  font-weight: 600;
+  margin-bottom: 2vw;
+  color: rgba(0, 0, 0, 0.479);
+}
+
+.input-busca {
+  width: 70%;
+  height: 2.5vw;
+  padding: 0 1.2vw;
+  border: none;
+  border-radius: 2vw;
+  background: #f5f5f5;
+  font-size: 0.9vw;
+  color: #333;
+  margin: 0 auto 2vw auto; 
+  display: block; 
+}
+
+
+.input-busca::placeholder {
+  color: #888;
+  font-weight: 300;
+}
+
+.input-busca:focus {
+  outline: none;   /* remove a borda preta */
+  border: none;    /* garante que não aparece borda extra */
+}
+
+
+.recentes {
+  margin-top: 1vw;
+}
+
+.recentes h4 {
+  font-size: 1vw;
+  font-weight: 600;
+  margin-bottom: 1.5vw;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+/* === TABELA === */
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 0.6vw;
+  overflow: hidden;
+}
+
+.tabela th,
+.tabela td {
+  text-align: left;
+  padding: 0.9vw 1vw;
+  font-size: 1vw;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.tabela th {
+  font-weight: 600;
+  background-color: #f5f5f5;
+}
+
+.tabela tr {
+  border-bottom: 1px solid #eee;
+}
+
+.tabela tr:last-child {
+  border-bottom: none;
+}
+
+.tabela tr:hover {
+  background: #f9f9f9;
+}
+
+.preco {
+  font-weight: 600;
+  color: #e60000;
+}

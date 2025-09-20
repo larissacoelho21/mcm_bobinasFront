@@ -49,16 +49,14 @@ body {
 /* === TOTAL FIXO === */
 .total {
     position: fixed;
-    bottom: 1vw;   /* distância do rodapé */
-    right: 2vw;    /* distância da lateral direita */
-    font-size: 1vw;
+    bottom: 2vw;   /* distância do rodapé */
+    right: 3vw;    /* distância da lateral direita */
+    font-size: 1.1vw;
     font-weight: 500;
     color: #333;
     text-align: right;
-    background: #fff;         /* fundo branco */
     padding: 0.5vw 1vw;       /* espaço interno */
-    border-radius: 0.6vw;     /* cantos arredondados */
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08); /* sombra leve */
+   
 }
 
 .total strong {

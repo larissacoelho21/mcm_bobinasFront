@@ -25,7 +25,6 @@ export function VisualizarProduto() {
     { nome: "Poliéster", valor: 9.0, quantidade: 1, unidade: "kg" },
     { nome: "Poliéster", valor: 9.0, quantidade: 1, unidade: "kg" },
     { nome: "Poliéster", valor: 9.0, quantidade: 1, unidade: "kg" },
-    { nome: "Poliéster", valor: 9.0, quantidade: 1, unidade: "kg" },
   ];
 
   const total = materiais.reduce(
