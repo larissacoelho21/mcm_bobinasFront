@@ -5,10 +5,14 @@ body {
 
 .menu-lateral-container {
   position: fixed;
-  margin-top: 1.3vw;             /* distância do topo */
-  left: 1.5vw;          /* distância da lateral */
-  width: 16vw;          /* largura proporcional à tela */
-  height: 38vw;         /* ocupa 90% da altura */
+  margin-top: 1.3vw;
+  /* distância do topo */
+  left: 1.5vw;
+  /* distância da lateral */
+  width: 16vw;
+  /* largura proporcional à tela */
+  height: 38vw;
+  /* ocupa 90% da altura */
   background-color: #FFF;
   padding: 2vh 0;
   box-shadow: 0 0.4vh 1.2vh rgba(0, 0, 0, 0.08);
@@ -16,11 +20,13 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  border-radius: 1vw;   /* bordas arredondadas */
+  border-radius: 1vw;
+  /* bordas arredondadas */
 }
 
 .logo {
-  max-width: 8vw;   /* imagem proporcional à tela */
+  max-width: 8vw;
+  /* imagem proporcional à tela */
   height: auto;
   margin-bottom: 2vw;
 }
@@ -36,76 +42,47 @@ body {
 
 .menu-item {
   width: 100%;
-  padding: 0.6vw 0;
-  text-align: start;
-  margin-left: 3vw;
+  padding: 0.8vw 0;
+  text-align: left;
   color: #000000;
   font-size: 0.9vw;
   text-decoration: none;
   transition: background-color 0.3s, color 0.3s;
 }
 
+.menu-item p {
+  text-align: start;
+}
+
 .menu-item:hover {
   color: #c41717;
 }
+
+/* Quando selecionado */
+.menu-link.selected p {
+  cursor: pointer;
+  transition: 200ms ease-in-out;
+}
+
+.menu-link.active p {
+  cursor: pointer;
+  color: var(--redDefault);
+}
+
 
 /* Seção de Upload de arquivo */
 .upload {
   cursor: pointer;
   transition: transform 0.3s;
-  margin-top: 2vw;
-  max-width: 8vw;   /* imagem proporcional à tela */
+  margin-top: 3vw;
+}
+
+.upload img {
   height: auto;
+  max-width: 8.2vw;
 }
 
 
 .upload:hover {
   transform: scale(1.03);
-} 
-/* 
-.upload-box {
-  background: linear-gradient(135deg, #e4e3e3, #d0d0d0);
-  border: 2px dashed #949393;
-  border-radius: 10px;
-  padding: 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.3s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
-
-
-
-.upload-icon-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 60px;
-  height: 60px;
-  background-color: #fff;
-  border-radius: 50%;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.plus-icon {
-  font-size: 30px;
-  color: #ffffff;
-  line-height: 1;
-}
-
-.upload-text {
-  font-size: 16px;
-  font-weight: bold;
-  color: #ffffff;
-  margin: 0;
-}
-
-.upload-subtext {
-  font-size: 14px;
-  color: #ffffff;
-  margin: 0;
-} */

@@ -1,0 +1,68 @@
+body {
+    background-color: #EFEFEF;
+    font-family: "Lexend Giga", sans-serif;
+}
+
+/* === FORM === */
+.formSimular {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2vw;
+}
+
+/* Inputs gerais */
+.formSimular input,
+.formSimular select {
+    width: 100%;
+    height: 2.5vw;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 0.5vw;
+    background: #f5f5f5;
+    font-size: 0.8vw;
+    color: #696969;
+    font-weight: 300;
+    transition: background 0.2s ease;
+}
+
+.formSimular input:focus,
+.formSimular select:focus {
+    outline: none;
+    background: #e8e8e8;
+}
+
+.input.readonly {
+    background: #e0e0e0;
+    color: #555;
+    font-weight: 500;
+}
+
+/* === PRODUTOS === */
+.linha-produto {
+    display: grid;
+    grid-template-columns: 2fr 0.6fr;
+    gap: 0.8vw;
+    width: 100%;
+}
+
+/* === TOTAL FIXO === */
+.total {
+    position: fixed;
+    bottom: 1vw;   /* distância do rodapé */
+    right: 2vw;    /* distância da lateral direita */
+    font-size: 1vw;
+    font-weight: 500;
+    color: #333;
+    text-align: right;
+    background: #fff;         /* fundo branco */
+    padding: 0.5vw 1vw;       /* espaço interno */
+    border-radius: 0.6vw;     /* cantos arredondados */
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08); /* sombra leve */
+}
+
+.total strong {
+    margin-left: 0.3vw; /* dá espaço entre 'Pedido:' e 'R$' */
+}
+
+

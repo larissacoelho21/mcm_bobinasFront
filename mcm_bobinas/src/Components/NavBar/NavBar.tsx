@@ -1,6 +1,6 @@
 import { NavLink, Link } from "react-router-dom";
 
-import Nome from "../../assets/logo.svg"
+import Nome from "../../assets/logo.svg";
 
 import "../NavBar/NavBar.css";
 
@@ -11,7 +11,9 @@ export function NavBar() {
         <div className="navBarDefault">
           <div className="left-side">
             <div className="nav-logo">
-                <Link to="/"><img src={Nome} alt="" /></Link>
+              <Link to="/">
+                <img src={Nome} alt="" />
+              </Link>
             </div>
           </div>
 
@@ -31,7 +33,7 @@ export function NavBar() {
                   className={({ isActive }) =>
                     isActive ? "navbar-link active" : "navbar-link"
                   }
-                  to={"#"}
+                  to={"/listaprodutos"}
                 >
                   <p className="parag">Produtos</p>
                 </NavLink>
