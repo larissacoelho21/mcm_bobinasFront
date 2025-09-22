@@ -1,4 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+
 import { MenuLateral } from "../Components/Menu Lateral/MenuLateral";
 import { NavBar } from "../Components/NavBar/NavBar";
 import "../Css/VisualizarProduto.css";
@@ -14,23 +16,21 @@ interface Material {
 
 export function VisualizarProduto() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const [materiais, setMateriais] = useState<Material[]>([]);
+  const [nomeProduto, setNomeProduto] = useState("");
+  const [total, setTotal] = useState(0);
 
-  const materiais: Material[] = [
-    { nome: "Polietileno (PE)", valor: 8.0, quantidade: 1, unidade: "kg" },
-    { nome: "Polipropileno (PP)", valor: 7.0, quantidade: 1, unidade: "kg" },
-    { nome: "PVC", valor: 6.0, quantidade: 1, unidade: "kg" },
-    { nome: "Aço Inoxidável", valor: 12.0, quantidade: 1, unidade: "kg" },
-    { nome: "Alumínio", valor: 10.0, quantidade: 1, unidade: "kg" },
-    { nome: "MDF", valor: 6.0, quantidade: 1, unidade: "m²" },
-    { nome: "Poliéster", valor: 9.0, quantidade: 1, unidade: "kg" },
-    { nome: "Poliéster", valor: 9.0, quantidade: 1, unidade: "kg" },
-    { nome: "Poliéster", valor: 9.0, quantidade: 1, unidade: "kg" },
-  ];
-
-  const total = materiais.reduce(
-    (acc, material) => acc + material.valor * material.quantidade,
-    0
-  );
+  useEffect(() => {
+    fetch(`http://localhost:5000/api/produto/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setMateriais(data.materiais);
+        setNomeProduto(data.nome);
+        setTotal(data.total);
+      })
+      .catch((err) => console.error("Erro ao buscar produto:", err));
+  }, [id]);
 
   const formatarMoeda = (valor: number) => {
     return valor.toLocaleString("pt-BR", {
@@ -53,9 +53,7 @@ export function VisualizarProduto() {
         <MenuLateral />
       </div>
 
-      {/* Conteúdo */}
       <div className="produto-container">
-        {/* Cabeçalho */}
         <header className="produto-header">
           <div className="header-left">
             <img
@@ -66,14 +64,12 @@ export function VisualizarProduto() {
               style={{ cursor: "pointer" }}
             />
             <p className="produto-label">Nome Produto:</p>
-            <p className="produto-nome">Produto BBC</p>
+            <p className="produto-nome">{nomeProduto}</p>
           </div>
           <div className="header-right">
-            <p className="produto-codigo">Cód: 1001</p>
+            <p className="produto-codigo">Cód: {id}</p>
           </div>
         </header>
-
-        {/* Tabela */}
 
         <div className="tabela-container">
           <table>
@@ -97,7 +93,6 @@ export function VisualizarProduto() {
             </tbody>
           </table>
 
-          {/* Rodapé */}
           <div className="tabela-footer">
             <p className="total-text">
               Total: <span>{formatarMoeda(total)}</span>

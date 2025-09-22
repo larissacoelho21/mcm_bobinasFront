@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import "../Css/ListaMateriaPrima.css";
 import { NavBar } from "../Components/NavBar/NavBar";
@@ -12,26 +13,16 @@ type Materia = {
   valor: number;
 };
 
-
 export function VisualizarMateriaPrima() {
   const navigate = useNavigate();
+  const [materias, setMaterias] = useState<Materia[]>([]);
 
-  const materias: Materia[] = [
-    { codigo: 1001, nome: "Produto BBC", valor: 57.6 },
-    { codigo: 1002, nome: "Produto X", valor: 120.1 },
-    { codigo: 1003, nome: "Produto Y", valor: 95.0 },
-    { codigo: 1004, nome: "Produto ZX", valor: 150.99 },
-    { codigo: 1005, nome: "Produto Alpha", valor: 100.0 },
-    { codigo: 1006, nome: "Produto Omega", valor: 1000.9 },
-    { codigo: 1007, nome: "Produto Delta", valor: 60.0 },
-    { codigo: 1008, nome: "Produto Sigma", valor: 80.0 },
-    { codigo: 1009, nome: "Produto Kappa", valor: 92.1 },
-    { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
-    { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
-    { codigo: 1009, nome: "Produto Kappa", valor: 92.1 },
-    { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
-    { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
-  ];
+  useEffect(() => {
+    fetch("http://localhost:5000/api/materias")
+      .then((res) => res.json())
+      .then((data) => setMaterias(data))
+      .catch((err) => console.error("Erro ao buscar matérias-primas:", err));
+  }, []);
 
   const handleVoltar = () => {
     navigate(-1);
@@ -48,7 +39,6 @@ export function VisualizarMateriaPrima() {
       </div>
 
       <div className="produto-container-materia">
-        {/* Cabeçalho isolado */}
         <header className="header-materia">
           <div className="header-column">
             <img
@@ -69,22 +59,18 @@ export function VisualizarMateriaPrima() {
           </div>
         </header>
 
-        {/* Caixa da tabela */}
         <div className="tabela-materia">
           <table>
             <tbody>
-              {materias.map((materia) => (
-                <tr /* key={produto.codigo} */>
+              {materias.map((materia, index) => (
+                <tr key={index}>
                   <td className="codigo">{materia.codigo}</td>
-                  <td
-                    className="link-produto"
-                  >
-                    {materia.nome}
-                  </td>
+                  <td className="link-produto">{materia.nome}</td>
                   <td className="preco">
                     R${" "}
                     {materia.valor.toLocaleString("pt-BR", {
                       minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
                     })}
                   </td>
                 </tr>

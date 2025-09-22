@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "../Css/SimularPedido.css";
@@ -9,13 +9,13 @@ import Voltar from "../assets/seta.png";
 import Lixeira from "../assets/trash.png";
 
 type Produto = {
-  id: number;
+  id: string; // pode ser string se o id não for int
   nome: string;
-  preco: number;
+  preco_total: number;
 };
 
 type PedidoItem = {
-  produto: string;
+  produtoId: string;
   quantidade: number;
 };
 
@@ -25,22 +25,24 @@ export function SimularPedido() {
   const [numeroPedido] = useState(26758); // poderia vir da API
   const [cliente, setCliente] = useState("");
   const [itens, setItens] = useState<PedidoItem[]>([
-    { produto: "", quantidade: 1 },
+    { produtoId: "", quantidade: 1 },
   ]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
 
-  // Exemplo fixo (simulação, depois pode puxar da API)
-  const produtos: Produto[] = [
-    { id: 1, nome: "Arroz 5kg", preco: 25.9 },
-    { id: 2, nome: "Feijão 1kg", preco: 8.5 },
-    { id: 3, nome: "Macarrão 500g", preco: 4.2 },
-  ];
+  // Buscar produtos reais da API
+  useEffect(() => {
+    fetch("http://localhost:5000/api/produtos-com-preco")
+      .then((res) => res.json())
+      .then((data) => setProdutos(data))
+      .catch((err) => console.error("Erro ao buscar produtos:", err));
+  }, []);
 
   const handleVoltar = () => {
     navigate(-1);
   };
 
   const handleAddItem = () => {
-    setItens([...itens, { produto: "", quantidade: 1 }]);
+    setItens([...itens, { produtoId: "", quantidade: 1 }]);
   };
 
   const handleChange = (
@@ -55,8 +57,8 @@ export function SimularPedido() {
 
   const calcularTotal = () => {
     return itens.reduce((acc, item) => {
-      const prod = produtos.find((p) => p.nome === item.produto);
-      return acc + (prod ? prod.preco * item.quantidade : 0);
+      const prod = produtos.find((p) => p.id === item.produtoId);
+      return acc + (prod ? prod.preco_total * item.quantidade : 0);
     }, 0);
   };
 
@@ -65,6 +67,9 @@ export function SimularPedido() {
       setItens(itens.slice(0, -1));
     }
   };
+
+  const formatarMoeda = (valor: number) =>
+    valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   return (
     <section className="container">
@@ -112,14 +117,16 @@ export function SimularPedido() {
           {itens.map((item, index) => (
             <div key={index} className="linha-produto">
               <select
-                value={item.produto}
-                onChange={(e) => handleChange(index, "produto", e.target.value)}
+                value={item.produtoId}
+                onChange={(e) =>
+                  handleChange(index, "produtoId", e.target.value)
+                }
                 className="select"
               >
                 <option value="">Selecione um produto</option>
                 {produtos.map((p) => (
-                  <option key={p.id} value={p.nome}>
-                    {p.nome}
+                  <option key={p.id} value={p.id}>
+                    {p.nome} - {formatarMoeda(p.preco_total)}
                   </option>
                 ))}
               </select>
@@ -147,7 +154,7 @@ export function SimularPedido() {
             type="button"
             onClick={handleRemoveProduto}
             className="remove-btn"
-            disabled={produtos.length <= 1}
+            disabled={itens.length <= 1}
           >
             <img src={Lixeira} alt="Remover" className="icon-lixeira" />
             <p>Remover último campo</p>
@@ -155,7 +162,7 @@ export function SimularPedido() {
         </div>
 
         <div className="total">
-          Total do Pedido: <strong>R$ {calcularTotal().toFixed(2)}</strong>
+          Total do Pedido: <strong>{formatarMoeda(calcularTotal())}</strong>
         </div>
       </div>
     </section>

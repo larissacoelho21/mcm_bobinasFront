@@ -6,13 +6,9 @@ body {
 .menu-lateral-container {
   position: fixed;
   margin-top: 1.3vw;
-  /* distância do topo */
   left: 1.5vw;
-  /* distância da lateral */
   width: 16vw;
-  /* largura proporcional à tela */
   height: 38vw;
-  /* ocupa 90% da altura */
   background-color: #FFF;
   padding: 2vh 0;
   box-shadow: 0 0.4vh 1.2vh rgba(0, 0, 0, 0.08);
@@ -21,17 +17,14 @@ body {
   justify-content: flex-start;
   align-items: center;
   border-radius: 1vw;
-  /* bordas arredondadas */
 }
 
 .logo {
   max-width: 8vw;
-  /* imagem proporcional à tela */
   height: auto;
   margin-bottom: 2vw;
 }
 
-/* Seção do menu de navegação */
 .menu-section {
   width: 100%;
   margin-top: 2vw;
@@ -42,43 +35,26 @@ body {
 
 .menu-item {
   width: 100%;
-  padding: 0.8vw 0;
-  text-align: left;
+  padding: 0.6vw 0;
+  text-align: start;
+  margin-left: 3vw;
   color: #000000;
   font-size: 0.9vw;
   text-decoration: none;
   transition: background-color 0.3s, color 0.3s;
 }
 
-.menu-item p {
-  text-align: start;
-}
-
 .menu-item:hover {
   color: #c41717;
 }
 
-/* Quando selecionado */
-.menu-link.selected p {
-  cursor: pointer;
-  transition: 200ms ease-in-out;
-}
-
-.menu-link.active p {
-  cursor: pointer;
-  color: var(--redDefault);
-}
-
-
-/* Seção de Upload de arquivo */
 .upload {
   cursor: pointer;
   transition: transform 0.3s;
-  margin-top: 3vw;
-  max-width: auto;
-  height: 11vw;
+  margin-top: 2vw;
+  max-width: 8vw;
+  height: auto;
 }
-
 
 .upload:hover {
   transform: scale(1.03);

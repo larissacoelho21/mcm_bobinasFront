@@ -175,3 +175,33 @@ div.Container {
   width: 1.1vw;  /* responsivo */
   height: auto;
 }
+
+/* Autocomplete */
+.autocomplete-wrapper {
+  position: relative;
+}
+
+.sugestoes {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 10;
+  font-size: 0.75rem;
+  border-radius: 0.4rem;
+  box-shadow: 0px 4px 40px rgba(0, 0, 0, 0.08);
+}
+
+.sugestao {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sugestao:hover {
+  background-color: #f0f0f0;
+}

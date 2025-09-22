@@ -1,52 +1,78 @@
-import { NavLink } from "react-router-dom";
+import { useRef } from "react";
 import logonome from "../../assets/logonome.png";
 import upload from "../../assets/Upload.png";
 import "./MenuLateral.css";
 
 export function MenuLateral() {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const filename = file.name.toLowerCase();
+
+      if (!filename.endsWith(".pdf") && !filename.endsWith(".xml")) {
+        alert("Tipo de arquivo não permitido. Apenas PDF ou XML.");
+        return;
+      }
+
+      console.log("📄 Arquivo selecionado:", file.name);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch("http://localhost:5000/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          alert(`Erro: ${result.error || "Tipo de arquivo não permitido."}`);
+          return;
+        }
+
+        console.log("✅ Upload concluído:", result);
+        alert(`Arquivo enviado: ${result.filename}`);
+      } catch (error) {
+        console.error("❌ Erro no upload:", error);
+        alert("Erro ao enviar o arquivo.");
+      }
+    }
+  };
+
   return (
     <div className="container">
       <section className="menu-lateral-container">
-        {/* Seção do Menu */}
         <nav className="menu-section">
-          {/* Seção do Logo */}
           <div className="logo-section">
             <img src={logonome} alt="MCM Bobinas Logo" className="logo" />
           </div>
-
-          <div className="list">
-            <NavLink /* identificando se o caminho da página selecionada corresponde */
-              className={({ isActive }) =>
-                isActive ? "menu-link active" : "menu-link"
-              }
-              to={"/addproduto"}
-            >
-              <p className="menu-item">Adicionar produto</p>
-            </NavLink>
-
-            <NavLink
-              className={({ isActive }) =>
-                isActive ? "menu-link active" : "menu-link"
-              }
-              to={"/addnotafiscal"}
-            >
-              <p className="menu-item">Adicionar nota fiscal</p>
-            </NavLink>
-
-            <NavLink
-              className={({ isActive }) =>
-                isActive ? "menu-link active" : "menu-link"
-              }
-              to={"/simularpedido"}
-            >
-              <p className="menu-item">Simular pedido</p>
-            </NavLink>
-          </div>
+          <a href="/addproduto" className="menu-item">Adicionar produto</a>
+          <a href="/addnotafiscal" className="menu-item">Adicionar nota fiscal</a>
+          <a href="/simularpedido" className="menu-item">Simulação pedido</a>
         </nav>
 
-        {/* Seção de Upload */}
         <div className="logo-section">
-          <img src={upload} alt="upload" className="upload" />
+          <label htmlFor="file-upload">
+            <img src={upload} alt="upload" className="upload" />
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            accept=".pdf,.xml"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
         </div>
       </section>
     </div>

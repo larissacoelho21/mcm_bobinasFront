@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import "../Css/ListaProduto.css";
 import { NavBar } from "../Components/NavBar/NavBar";
@@ -7,37 +8,28 @@ import { MenuLateral } from "../Components/Menu Lateral/MenuLateral";
 import Voltar from "../assets/seta.png";
 
 type Produto = {
-  codigo: number;
+  id: number;
   nome: string;
-  valor: number;
+  preco_total: number;
 };
 
 export function ListaProdutos() {
   const navigate = useNavigate();
+  const [produtos, setProdutos] = useState<Produto[]>([]);
 
-  const produtos: Produto[] = [
-    { codigo: 1001, nome: "Produto BBC", valor: 57.6 },
-    { codigo: 1002, nome: "Produto X", valor: 120.1 },
-    { codigo: 1003, nome: "Produto Y", valor: 95.0 },
-    { codigo: 1004, nome: "Produto ZX", valor: 150.99 },
-    { codigo: 1005, nome: "Produto Alpha", valor: 100.0 },
-    { codigo: 1006, nome: "Produto Omega", valor: 1000.9 },
-    { codigo: 1007, nome: "Produto Delta", valor: 60.0 },
-    { codigo: 1008, nome: "Produto Sigma", valor: 80.0 },
-    { codigo: 1009, nome: "Produto Kappa", valor: 92.1 },
-    { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
-    { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
-    { codigo: 1009, nome: "Produto Kappa", valor: 92.1 },
-    { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
-    { codigo: 1010, nome: "Produto Zeta", valor: 2500.0 },
-  ];
+  useEffect(() => {
+    fetch("http://localhost:5000/api/produtos-com-preco")
+      .then((res) => res.json())
+      .then((data) => setProdutos(data))
+      .catch((err) => console.error("Erro ao buscar produtos:", err));
+  }, []);
 
   const handleVoltar = () => {
     navigate(-1);
   };
 
-  const handleClickProduto = () /* (codigo: number)  */ => {
-    navigate(/* `/produto/${codigo}` */ `/visualizarproduto`);
+  const handleClickProduto = (id: number) => {
+    navigate(`/visualizarproduto/${id}`);
   };
 
   return (
@@ -51,7 +43,6 @@ export function ListaProdutos() {
       </div>
 
       <div className="produto-container-produto">
-        {/* Cabeçalho isolado */}
         <header className="header-produto">
           <div className="header-col">
             <img
@@ -72,23 +63,23 @@ export function ListaProdutos() {
           </div>
         </header>
 
-        {/* Caixa da tabela */}
         <div className="tabela-produto">
           <table>
             <tbody>
               {produtos.map((produto) => (
-                <tr /* key={produto.codigo} */>
-                  <td className="codigo">{produto.codigo}</td>
+                <tr key={produto.id}>
+                  <td className="codigo">{produto.id}</td>
                   <td
                     className="link-produto"
-                    onClick={() => handleClickProduto(/* produto.codigo */)}
+                    onClick={() => handleClickProduto(produto.id)}
                   >
                     {produto.nome}
                   </td>
                   <td className="preco">
                     R${" "}
-                    {produto.valor.toLocaleString("pt-BR", {
+                    {produto.preco_total.toLocaleString("pt-BR", {
                       minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
                     })}
                   </td>
                 </tr>

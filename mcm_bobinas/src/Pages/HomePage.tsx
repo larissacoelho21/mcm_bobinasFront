@@ -1,43 +1,40 @@
-import { useState } from "react";
-import "../Css/HomePage.css";
-import { NavBar } from "../Components/NavBar/NavBar";
+import React, { useEffect, useState } from "react";
 import { MenuLateral } from "../Components/Menu Lateral/MenuLateral";
+import { NavBar } from "../Components/NavBar/NavBar";
+import "../Css/HomePage.css";
 
-type Produto = {
-  id: number;
+type ProdutoFinal = {
+  id: string;
   nome: string;
-  dataCriacao: string;
-  precoTotal: number;
+  criado_em: string;
+  preco_total: number;
 };
 
 export function HomePage() {
+  const [produtos, setProdutos] = useState<ProdutoFinal[]>([]);
   const [busca, setBusca] = useState("");
 
-  // Exemplo de produtos (puxar de API depois)
-  const produtos: Produto[] = [
-    { id: 1, nome: "Produto BBC", dataCriacao: "19/09/2025", precoTotal: 250 },
-    { id: 2, nome: "Produto X", dataCriacao: "18/09/2025", precoTotal: 180 },
-    { id: 3, nome: "Produto Alpha", dataCriacao: "15/09/2025", precoTotal: 300 },
-    { id: 4, nome: "Produto ZY", dataCriacao: "10/09/2025", precoTotal: 90 },
-  ];
+  useEffect(() => {
+    fetch("http://localhost:5000/api/produtos-com-preco")
+      .then((res) => res.json())
+      .then((data: ProdutoFinal[]) => setProdutos(data))
+      .catch((err) => console.error("Erro ao buscar produtos:", err));
+  }, []);
 
   const filtrados = produtos.filter((p) =>
     p.nome.toLowerCase().includes(busca.toLowerCase())
   );
 
   return (
-    <div className="layout-container-home">
-      <div className="nav">
-        <NavBar />
-      </div>
+    <section className="container">
+      <NavBar />
+      <MenuLateral />
 
-      <div className="menu">
-        <MenuLateral />
-      </div>
-
-      <div className="home-container">
-        <h2 className="titulo">Bem vindo á calculadora da</h2>
-        <h3 className="subtitulo">MCM BOBINAS!</h3>
+      <div className="Container">
+        <div className="boas-vindas">
+          <h2 className="titulo">Bem vindo à calculadora da</h2>
+          <h3 className="subtitulo">MCM BOBINAS!</h3>
+        </div>
 
         <input
           type="text"
@@ -47,32 +44,31 @@ export function HomePage() {
           onChange={(e) => setBusca(e.target.value)}
         />
 
-        {/* Tabela de recentes */}
         <div className="recentes">
-          <h4>Recentes</h4>
+          <h4>Últimos Produtos Adicionados</h4>
 
           <table className="tabela">
             <thead>
               <tr>
                 <th>ID</th>
                 <th>Nome</th>
-                <th>Data de criação</th>
-                <th>Preço total</th>
+                <th>Criado em</th>
+                <th>Preço Total</th>
               </tr>
             </thead>
             <tbody>
-              {filtrados.map((produto) => (
-                <tr key={produto.id}>
+              {filtrados.map((produto, index) => (
+                <tr key={index}>
                   <td>{produto.id}</td>
                   <td>{produto.nome}</td>
-                  <td>{produto.dataCriacao}</td>
-                  <td className="preco">R$ {produto.precoTotal.toFixed(2)}</td>
+                  <td>{produto.criado_em}</td>
+                  <td className="preco">R$ {produto.preco_total.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

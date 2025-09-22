@@ -15,20 +15,20 @@ const Router: React.FC = () => {
     <BrowserRouter>
       <Routes>
         {/* Home */}
-        <Route path="/" element={<HomePage/>}></Route>
+        <Route path="/" element={<HomePage />} />
 
         {/* Páginas */}
-        <Route path="/addproduto" element={<AdicionarProduto/>}></Route>
-        <Route path="/addnotafiscal" element={<AdicionarNotaFiscal/>}></Route>
-        <Route path="/simularpedido" element={<SimularPedido/>}></Route>
-        <Route path="/listaprodutos" element={<ListaProdutos/>}></Route>
-        <Route path="/visualizarproduto" element={<VisualizarProduto/>}></Route>
-        <Route path="/visualizarmateria" element={<VisualizarMateriaPrima/>}></Route>
-        
+        <Route path="/addproduto" element={<AdicionarProduto />} />
+        <Route path="/addnotafiscal" element={<AdicionarNotaFiscal />} />
+        <Route path="/simularpedido" element={<SimularPedido />} />
+        <Route path="/listaprodutos" element={<ListaProdutos />} />
+        <Route path="/visualizarproduto" element={<VisualizarProduto />} />
+        <Route path="/visualizarproduto/:id" element={<VisualizarProduto />} />
+        <Route path="/visualizarmateria" element={<VisualizarMateriaPrima />} />
 
         {/* Components */}
-        <Route path="/navbar" element={<NavBar/>}></Route>
-        <Route path="/menu" element={<MenuLateral/>}></Route>
+        <Route path="/navbar" element={<NavBar />} />
+        <Route path="/menu" element={<MenuLateral />} />
       </Routes>
     </BrowserRouter>
   );
