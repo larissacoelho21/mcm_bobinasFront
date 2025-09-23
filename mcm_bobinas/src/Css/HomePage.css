@@ -122,3 +122,15 @@
   font-weight: 600;
   color: #e60000;
 }
+
+.link-produto {
+  color: #333 !important;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+
+.link-produto:hover {
+  color: #e60000 !important;
+  text-decoration: none;
+}

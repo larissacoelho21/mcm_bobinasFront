@@ -74,22 +74,29 @@ export function VisualizarProduto() {
         <div className="tabela-container">
           <table>
             <thead>
+
               <tr>
                 <th>Matéria Prima</th>
                 <th>Valor (R$)</th>
                 <th>Quantidade</th>
                 <th>Unidade medida</th>
+                <th>Valor Total (R$)</th>
               </tr>
+
             </thead>
             <tbody>
-              {materiais.map((material, index) => (
-                <tr key={index}>
-                  <td>{material.nome}</td>
-                  <td>{formatarMoeda(material.valor)}</td>
-                  <td>{material.quantidade}</td>
-                  <td>{material.unidade}</td>
-                </tr>
-              ))}
+              {materiais.map((material, index) => {
+                const totalItem = material.valor * material.quantidade;
+                return (
+                  <tr key={index}>
+                    <td>{material.nome}</td>
+                    <td>{formatarMoeda(material.valor)}</td>
+                    <td>{material.quantidade}</td>
+                    <td>{material.unidade}</td>
+                    <td>{formatarMoeda(totalItem)}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
 

@@ -19,6 +19,8 @@ type MateriaPrima = {
 type CampoMateriaPrima = {
   materiaPrima: string;
   unidade: string;
+  preco_unitario: string;
+  preco: string;
   quantidade: string;
   textoBusca: string;
 };
@@ -29,7 +31,7 @@ export function AdicionarProduto() {
   const [nomeProduto, setNomeProduto] = useState("");
   const [codigoProduto, setCodigoProduto] = useState("");
   const [materias, setMaterias] = useState<CampoMateriaPrima[]>([
-    { materiaPrima: "", unidade: "", quantidade: "", textoBusca: "" },
+    { materiaPrima: "", unidade: "", preco_unitario: "", preco: "", quantidade: "", textoBusca: "" },
   ]);
   const [materiasPrimas, setMateriasPrimas] = useState<MateriaPrima[]>([]);
   const [campoAtivo, setCampoAtivo] = useState<number | null>(null);
@@ -44,7 +46,7 @@ export function AdicionarProduto() {
   const handleAddCampo = () => {
     setMaterias([
       ...materias,
-      { materiaPrima: "", unidade: "", quantidade: "", textoBusca: "" },
+      { materiaPrima: "", unidade: "", preco_unitario: "", preco: "", quantidade: "", textoBusca: "" },
     ]);
   };
 
@@ -73,17 +75,31 @@ export function AdicionarProduto() {
         const res = await fetch(`http://localhost:5000/api/unidades/${value}`);
         const resultado = await res.json();
 
-        if (resultado.unidade) {
-          newMaterias[index].unidade = resultado.unidade;
-        } else {
-          newMaterias[index].unidade = "";
-        }
-
+        newMaterias[index].unidade = resultado.unidade || "";
+        newMaterias[index].preco_unitario = resultado.preco_unitario?.toString() || "";
         newMaterias[index].textoBusca =
           materiasPrimas.find((m) => m.codigo === value)?.nome || "";
+
+        const qtd = parseFloat(newMaterias[index].quantidade);
+        const precoUnit = parseFloat(newMaterias[index].preco_unitario);
+        if (!isNaN(qtd) && !isNaN(precoUnit)) {
+          newMaterias[index].preco = (qtd * precoUnit).toFixed(2);
+        }
       } catch (err) {
         console.error("Erro ao buscar unidade de medida:", err);
         newMaterias[index].unidade = "";
+        newMaterias[index].preco_unitario = "";
+        newMaterias[index].preco = "";
+      }
+    }
+
+    if (field === "quantidade") {
+      const qtd = parseFloat(value);
+      const precoUnit = parseFloat(newMaterias[index].preco_unitario);
+      if (!isNaN(qtd) && !isNaN(precoUnit)) {
+        newMaterias[index].preco = (qtd * precoUnit).toFixed(2);
+      } else {
+        newMaterias[index].preco = "";
       }
     }
 
@@ -95,14 +111,14 @@ export function AdicionarProduto() {
     e.preventDefault();
 
     if (!nomeProduto || !codigoProduto || materias.some(m => !m.materiaPrima || !m.quantidade)) {
-      toast.warning('Preencha todos os campos!')
+      toast.warning('Preencha todos os campos!');
       return;
     }
 
     const data = {
       nomeProduto,
       codigoProduto,
-      materias: materias.map(({ textoBusca, ...rest }) => rest),
+      materias: materias.map(({ textoBusca, preco, preco_unitario, ...rest }) => rest),
     };
 
     try {
@@ -110,11 +126,11 @@ export function AdicionarProduto() {
       toast.success('Produto adicionado com sucesso!');
       setNomeProduto("");
       setCodigoProduto("");
-      setMaterias([{ materiaPrima: "", unidade: "", quantidade: "", textoBusca: "" }]);
+      setMaterias([{ materiaPrima: "", unidade: "", preco_unitario: "", preco: "", quantidade: "", textoBusca: "" }]);
       navigate("/listaprodutos");
     } catch (error) {
       console.error("Erro ao enviar:", error);
-      toast.error('Erro ao enviar produto. Tente novamente')
+      toast.error('Erro ao enviar produto. Tente novamente');
     }
   };
 
@@ -207,14 +223,6 @@ export function AdicionarProduto() {
               </div>
 
               <input
-                type="text"
-                placeholder="Unidade de medida"
-                value={campo.unidade}
-                readOnly
-                className="input readonly"
-              />
-
-              <input
                 type="number"
                 placeholder="Quantidade"
                 value={campo.quantidade}
@@ -224,6 +232,23 @@ export function AdicionarProduto() {
                 className="number-input"
                 required
               />
+
+              <input
+                type="text"
+                placeholder="Unidade de medida"
+                value={campo.unidade}
+                readOnly
+                className="input readonly"
+              />
+
+              <input
+                type="text"
+                placeholder="Preço"
+                value={campo.preco ? `R$ ${parseFloat(campo.preco).toFixed(2)}` : ""}
+                readOnly
+                className="input readonly preco"
+              />
+
             </div>
           ))}
 

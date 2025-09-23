@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ importado
 import { MenuLateral } from "../Components/Menu Lateral/MenuLateral";
 import { NavBar } from "../Components/NavBar/NavBar";
 import "../Css/HomePage.css";
@@ -13,6 +14,7 @@ type ProdutoFinal = {
 export function HomePage() {
   const [produtos, setProdutos] = useState<ProdutoFinal[]>([]);
   const [busca, setBusca] = useState("");
+  const navigate = useNavigate(); // ✅ inicializado
 
   useEffect(() => {
     fetch("http://localhost:5000/api/produtos-com-preco")
@@ -24,6 +26,10 @@ export function HomePage() {
   const filtrados = produtos.filter((p) =>
     p.nome.toLowerCase().includes(busca.toLowerCase())
   );
+
+  const handleClickProduto = (id: string) => {
+    navigate(`/visualizarproduto/${id}`); // ✅ navegação
+  };
 
   return (
     <section className="container">
@@ -60,7 +66,13 @@ export function HomePage() {
               {filtrados.map((produto, index) => (
                 <tr key={index}>
                   <td>{produto.id}</td>
-                  <td>{produto.nome}</td>
+                  <td
+                    className="link-produto"
+                    onClick={() => handleClickProduto(produto.id)} // ✅ clique
+                    style={{ cursor: "pointer", color: "#007bff" }}
+                  >
+                    {produto.nome}
+                  </td>
                   <td>{produto.criado_em}</td>
                   <td className="preco">R$ {produto.preco_total.toFixed(2)}</td>
                 </tr>
