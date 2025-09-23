@@ -3,7 +3,7 @@ from flask_cors import CORS
 import sqlite3
 from datetime import datetime
 from bs4 import BeautifulSoup
-
+from pydantic import BaseModel
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
@@ -74,16 +74,23 @@ def listar_materias():
 
 # Rota para listar unidade de medida de uma matéria-prima
 @app.route('/api/unidades/<codigo_materia>', methods=['GET'])
-def listar_unidades_por_materia(codigo_materia):
+def listar_unidades_e_preco_por_materia(codigo_materia):
     try:
         conn = sqlite3.connect('produtos.db')
         cursor = conn.cursor()
-        cursor.execute("SELECT unidade FROM materias_primas WHERE codigo = ?", (codigo_materia,))
-        dados = cursor.fetchall()
-        unidades = [row[0] for row in dados]
-        return jsonify(unidades)
+        cursor.execute("SELECT unidade, preco_unitario FROM materias_primas WHERE codigo = ?", (codigo_materia,))
+        row = cursor.fetchone()
+
+        if row:
+            resultado = {
+                'unidade': row[0],
+                'preco_unitario': row[1]
+            }
+            return jsonify(resultado)
+        else:
+            return jsonify({'erro': 'Matéria-prima não encontrada'}), 404
     except Exception as e:
-        return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
+        return jsonify({'erro': str(e)}), 500
     finally:
         conn.close()
 
@@ -297,6 +304,43 @@ def visualizar_produto(id):
         return jsonify({'status': 'erro', 'mensagem': str(e)}), 500
     finally:
         conn.close()
+
+class Produto(BaseModel):
+    cod: str
+    descricao: str
+    unid: str
+    qtd: float
+    vlrUnit: float
+    fornecedor: str  # campo extra do formulário
+    emissao: str  
+
+@app.post("/inserir-nota")
+async def inserir_nota(produto: Produto):
+    conn = sqlite3.connect("notas.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO historico (
+            codigo,
+            descricao_fornecedor,
+            descricao_produto,
+            unidade,
+            quantidade,
+            preco_unitario,
+            emissao
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        produto.cod,
+        produto.fornecedor,
+        produto.descricao,
+        produto.unid,
+        produto.qtd,
+        produto.vlrUnit,
+        produto.emissao or datetime.now().isoformat()
+    ))
+
+    conn.commit()
+    conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
