@@ -109,7 +109,7 @@ export function AdicionarProduto() {
       setNomeProduto("");
       setCodigoProduto("");
       setMaterias([{ materiaPrima: "", unidade: "", quantidade: "", textoBusca: "" }]);
-      navigate("/produtos");
+      navigate("/listaprodutos");
     } catch (error) {
       console.error("Erro ao enviar:", error);
       alert("Erro ao enviar produto.");
