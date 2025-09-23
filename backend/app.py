@@ -141,6 +141,7 @@ def upload_file():
         import pdfplumber
         import re
         from io import BytesIO
+        import sqlite3
 
         conteudo_pdf = BytesIO(file.read())
 
@@ -162,36 +163,55 @@ def upload_file():
             conn = sqlite3.connect("produtos.db")
             cursor = conn.cursor()
 
-            campos = [
-                "Código", "Descrição", "NCM", "CST", "CFOP", "Unidade",
-                "Quantidade", "Valor Unitário", "Valor Total", "ICMS",
-                "IPI", "Alíquota ICMS", "Alíquota IPI"
-            ]
-
             for pagina in pdf.pages:
                 tabelas = pagina.extract_tables()
                 for tabela in tabelas:
                     for linha in tabela:
-                        if linha and len(linha) >= len(campos):
+                        if not linha or not any(linha):
+                            continue
+
+                        if len(linha) >= 9 and linha[1] and linha[7] and linha[8]:
                             if "DESCRIÇÃO DO PRODUTO" in linha[1].upper():
                                 continue
 
-                            dados = {campo: valor for campo, valor in zip(campos, linha)}
+                            codigos = linha[0].split("\n") if linha[0] else []
+                            descricoes = linha[1].split("\n") if linha[1] else []
+                            quantidades = linha[6].split("\n") if linha[6] else []
+                            valores_unit = linha[7].split("\n") if linha[7] else []
+                            valores_total = linha[8].split("\n") if linha[8] else []
 
-                            cursor.execute("""
-                                INSERT INTO historico (
-                                    codigo, descricao_fornecedor, descricao_produto,
-                                    unidade, quantidade, preco_unitario, emissao
-                                ) VALUES (?, ?, ?, ?, ?, ?, ?)
-                            """, (
-                                dados.get("Código", ""),
-                                texto_emitente,
-                                dados.get("Descrição", ""),
-                                dados.get("Unidade", ""),
-                                float(dados.get("Quantidade", "0").replace(",", ".")),
-                                float(dados.get("Valor Unitário", "0").replace(",", ".")),
-                                data_emissao
-                            ))
+                            total_itens = max(len(descricoes), len(valores_unit))
+
+                            for i in range(total_itens):
+                                codigo = codigos[i] if i < len(codigos) else ""
+                                descricao = descricoes[i] if i < len(descricoes) else "Produto não identificado"
+                                quantidade = quantidades[i] if i < len(quantidades) else "1"
+                                valor_unit = valores_unit[i] if i < len(valores_unit) else "0,00"
+
+                                try:
+                                    preco_unitario = float(valor_unit.replace(".", "").replace(",", "."))
+                                    qtd = float(quantidade.replace(",", "."))
+                                except:
+                                    preco_unitario = 0.0
+                                    qtd = 1.0
+
+                                try:
+                                    cursor.execute("""
+                                        INSERT INTO historico (
+                                            codigo, descricao_fornecedor, descricao_produto,
+                                            unidade, quantidade, preco_unitario, emissao
+                                        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                                    """, (
+                                        codigo.strip(),
+                                        texto_emitente,
+                                        descricao.strip(),
+                                        "UN",
+                                        qtd,
+                                        preco_unitario,
+                                        data_emissao
+                                    ))
+                                except Exception:
+                                    continue
 
             conn.commit()
             conn.close()
@@ -204,7 +224,10 @@ def upload_file():
         })
 
     elif filename.endswith('.xml'):
-        # Mantém o bloco XML como está, sem alterações
+        from bs4 import BeautifulSoup
+        from datetime import datetime
+        import sqlite3
+
         conteudo = file.read().decode('utf-8')
         soup = BeautifulSoup(conteudo, "xml")
 
@@ -214,7 +237,8 @@ def upload_file():
         try:
             emissao = datetime.fromisoformat(raw_emissao).strftime("%d/%m/%Y")
         except ValueError:
-            emissao = raw_emissao[:10].split("-")[2] + "/" + raw_emissao[:10].split("-")[1] + "/" + raw_emissao[:10].split("-")[0]
+            partes = raw_emissao[:10].split("-")
+            emissao = f"{partes[2]}/{partes[1]}/{partes[0]}"
 
         conn = sqlite3.connect("produtos.db")
         cursor = conn.cursor()
@@ -226,20 +250,23 @@ def upload_file():
             quantidade = det.find("qCom").text if det.find("qCom") else "0"
             preco_unitario = det.find("vUnCom").text if det.find("vUnCom") else "0"
 
-            cursor.execute("""
-                INSERT INTO historico (
-                    codigo, descricao_fornecedor, descricao_produto,
-                    unidade, quantidade, preco_unitario, emissao
-                ) VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (
-                codigo,
-                fornecedor,
-                nome_produto,
-                unidade,
-                float(quantidade),
-                float(preco_unitario),
-                emissao
-            ))
+            try:
+                cursor.execute("""
+                    INSERT INTO historico (
+                        codigo, descricao_fornecedor, descricao_produto,
+                        unidade, quantidade, preco_unitario, emissao
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    codigo,
+                    fornecedor,
+                    nome_produto,
+                    unidade,
+                    float(quantidade),
+                    float(preco_unitario),
+                    emissao
+                ))
+            except Exception:
+                continue
 
         conn.commit()
         conn.close()
@@ -253,6 +280,7 @@ def upload_file():
 
     else:
         return jsonify({'error': 'Tipo de arquivo não permitido. Apenas PDF ou XML.'}), 400
+
 
 @app.route('/api/produto/<id>', methods=['GET'])
 def visualizar_produto(id):
