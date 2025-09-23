@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { toast } from 'sonner';
+
 import "../Css/AddNotaFiscal.css";
 import { NavBar } from "../Components/NavBar/NavBar";
 import { MenuLateral } from "../Components/Menu Lateral/MenuLateral";
@@ -119,12 +121,12 @@ export function AdicionarNotaFiscal() {
         }
       } catch (error) {
         console.error(error);
-        alert("Falha ao enviar nota fiscal.");
+        toast.error('Erro ao enviar nota fiscal')
         return;
       }
     }
 
-    alert("Nota fiscal enviada com sucesso!");
+    toast.success("Nota fiscal enviada com sucesso!");
     navigate("/notas");
   };
 

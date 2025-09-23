@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+import { toast } from 'sonner';
+
 import "../Css/AddProduto.css";
 import { NavBar } from "../Components/NavBar/NavBar";
 import { MenuLateral } from "../Components/Menu Lateral/MenuLateral";
@@ -93,7 +95,7 @@ export function AdicionarProduto() {
     e.preventDefault();
 
     if (!nomeProduto || !codigoProduto || materias.some(m => !m.materiaPrima || !m.quantidade)) {
-      alert("Preencha todos os campos obrigatórios.");
+      toast.warning('Preencha todos os campos!')
       return;
     }
 
@@ -105,14 +107,14 @@ export function AdicionarProduto() {
 
     try {
       await axios.post("http://localhost:5000/api/produto", data);
-      alert("Produto enviado com sucesso!");
+      toast.success('Produto adicionado com sucesso!');
       setNomeProduto("");
       setCodigoProduto("");
       setMaterias([{ materiaPrima: "", unidade: "", quantidade: "", textoBusca: "" }]);
       navigate("/listaprodutos");
     } catch (error) {
       console.error("Erro ao enviar:", error);
-      alert("Erro ao enviar produto.");
+      toast.error('Erro ao enviar produto. Tente novamente')
     }
   };
 
