@@ -34,7 +34,7 @@ def receber_produto():
 
         # Inserir ficha técnica
         for m in materias:
-            if not m.get('materiaPrima') or not m.get('unidadeMedida') or not m.get('quantidade'):
+            if not m.get('materiaPrima') or not m.get('unidade') or not m.get('quantidade'):
                 return jsonify({'status': 'erro', 'mensagem': 'Matéria-prima incompleta'}), 400
 
             cursor.execute("""
