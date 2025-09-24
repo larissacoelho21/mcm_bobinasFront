@@ -118,9 +118,9 @@
 }
 
 /* === Preço destacado === */
-.preco {
-  font-weight: 600;
-  color: #e60000;
+.id-home{
+  font-weight: 600 !important;
+  color: #e60000 !important;
 }
 
 .link-produto {
@@ -128,7 +128,6 @@
   cursor: pointer;
   transition: color 0.2s ease;
 }
-
 
 .link-produto:hover {
   color: #e60000 !important;

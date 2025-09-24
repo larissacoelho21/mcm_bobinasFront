@@ -16,6 +16,7 @@ type Materia = {
 export function VisualizarMateriaPrima() {
   const navigate = useNavigate();
   const [materias, setMaterias] = useState<Materia[]>([]);
+  const [busca, setBusca] = useState(""); // ✅ estado da busca
 
   useEffect(() => {
     fetch("http://localhost:5000/api/materias")
@@ -27,6 +28,10 @@ export function VisualizarMateriaPrima() {
   const handleVoltar = () => {
     navigate(-1);
   };
+
+  const materiasFiltradas = materias.filter((m) =>
+    m.nome.toLowerCase().includes(busca.toLowerCase())
+  );
 
   return (
     <div className="layout-container-materia">
@@ -60,13 +65,21 @@ export function VisualizarMateriaPrima() {
         </header>
 
         <div className="tabela-materia">
+          {/* Caixa de pesquisa */}
+        <input
+          type="text"
+          placeholder="Buscar matéria-prima..."
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          className="input-busca-lista"
+        />
           <table>
             <tbody>
-              {materias.map((materia, index) => (
+              {materiasFiltradas.map((materia, index) => (
                 <tr key={index}>
                   <td className="codigo">{materia.codigo}</td>
                   <td className="link-produto">{materia.nome}</td>
-                  <td className="preco">
+                  <td className="preco-materia">
                     R${" "}
                     {materia.valor.toLocaleString("pt-BR", {
                       minimumFractionDigits: 2,

@@ -23,26 +23,26 @@
   border-radius: 0.6vw;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 1.2vw;
+    font-size: 1vw;
 }
 
 /* Colunas */
 .header-col {
   display: flex;
   align-items: center;
-  font-size: 1.2vw;
   font-weight: 600;
   color: #333;
-  gap: 1.2vw;
+  gap: 1.3vw;
 }
 
 .nome-col span {
- margin-left: -6vw;
+ margin-left: -4vw;
  font-weight: 600;
 }
 
 .valor-col {
   justify-content: flex-end;
-  margin-left: -5vw;
+  margin-left: 3vw;
   font-weight: 600;
 }
 

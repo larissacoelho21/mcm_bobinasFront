@@ -75,7 +75,7 @@ export function ListaProdutos() {
                   >
                     {produto.nome}
                   </td>
-                  <td className="preco">
+                  <td className="preco-produto">
                     R${" "}
                     {produto.preco_total.toLocaleString("pt-BR", {
                       minimumFractionDigits: 2,

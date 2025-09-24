@@ -85,7 +85,7 @@ div.Container {
     grid-template-columns: 2fr 1fr 1fr 1fr;
     gap: 0.6vw;
     align-items: center;
-    margin-bottom: 0.5vw;
+    margin-bottom: 0.3vw;
 }
 
 .select,
@@ -176,7 +176,7 @@ div.Container {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 0.5vw;
+    margin-top: 0.3vw;
 }
 
 .remove-button p {

@@ -5,7 +5,7 @@
 
 .produto-container-materia {
   max-width: 80vw;
-  margin-top: 1.5vw;
+  margin-top: 1.6vw;
   margin-left: 18vw;
   border-radius: 1vw;
   background-color: #efefef;
@@ -23,21 +23,22 @@
   border-radius: 0.6vw;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 1.2vw;
+  font-size: 1vw;
+
 }
 
 /* Colunas */
 .header-column {
   display: flex;
   align-items: center;
-  font-size: 1.2vw;
   font-weight: 600;
   color: #333;
-  gap: 1.2vw;
+  gap: 1.3vw;
 }
 
 .nome-column span {
- margin-left: -6vw;
- font-weight: 600;
+  margin-left: -6vw;
+  font-weight: 600;
 }
 
 .valor-column {
@@ -54,7 +55,7 @@
   padding: 1vw;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
 
-  height: 32vw;
+  height: 32.5vw;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -63,12 +64,12 @@
 .tabela-materia table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 1vw;
 }
 
 .tabela-materia td {
   padding: 1vw 3vw;
   margin-left: 2vw;
+  font-size: 0.9vw;
 
   border-bottom: 0.1vw solid #e5e5e5;
   color: #333;
@@ -81,8 +82,9 @@
 
 /* Coluna código em vermelho */
 .codigo {
-  color: #e60000 !important;
   font-weight: bolder;
+  color: #e60000;
+
 }
 
 /* Nome do produto como link */
@@ -97,6 +99,31 @@
   text-decoration: none;
 }
 
-.preco {
+.preco-materia {
   font-weight: bolder;
+}
+
+/* Input busca */
+
+.input-busca-lista {
+  width: 80%;
+  height: 2.3vw;
+  padding: 0 1.2vw;
+  border: none;
+  border-radius: 2vw;
+  background: #f5f5f5;
+  font-size: 0.9vw;
+  color: #333;
+  margin: 0 auto 2vw auto;
+  display: block;
+}
+
+.input-busca-lista::placeholder {
+  color: #888;
+  font-weight: 300;
+}
+
+.input-busca-lista:focus {
+  outline: none;
+  border: none;
 }

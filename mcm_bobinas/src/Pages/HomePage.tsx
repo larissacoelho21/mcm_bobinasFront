@@ -65,7 +65,7 @@ export function HomePage() {
             <tbody>
               {filtrados.map((produto, index) => (
                 <tr key={index}>
-                  <td>{produto.id}</td>
+                  <td className="id-home">{produto.id}</td>
                   <td
                     className="link-produto"
                     onClick={() => handleClickProduto(produto.id)} // ✅ clique
@@ -74,7 +74,7 @@ export function HomePage() {
                     {produto.nome}
                   </td>
                   <td>{produto.criado_em}</td>
-                  <td className="preco">R$ {produto.preco_total.toFixed(2)}</td>
+                  <td className="preco-total">R$ {produto.preco_total.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
