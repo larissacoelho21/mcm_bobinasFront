@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from 'sonner';
 
 import "../Css/AddProduto.css";
@@ -25,14 +24,13 @@ type CampoMateriaPrima = {
   textoBusca: string;
 };
 
-export function AdicionarProduto() {
+export function EditarProduto() {
   const navigate = useNavigate();
+  const { id } = useParams(); // ✅ pega o ID da URL
 
   const [nomeProduto, setNomeProduto] = useState("");
   const [codigoProduto, setCodigoProduto] = useState("");
-  const [materias, setMaterias] = useState<CampoMateriaPrima[]>([
-    { materiaPrima: "", unidade: "", preco_unitario: "", preco: "", quantidade: "", textoBusca: "" },
-  ]);
+  const [materias, setMaterias] = useState<CampoMateriaPrima[]>([]);
   const [materiasPrimas, setMateriasPrimas] = useState<MateriaPrima[]>([]);
   const [campoAtivo, setCampoAtivo] = useState<number | null>(null);
 
@@ -42,6 +40,27 @@ export function AdicionarProduto() {
       .then((data: MateriaPrima[]) => setMateriasPrimas(data))
       .catch((err) => console.error("Erro ao buscar matérias-primas:", err));
   }, []);
+
+  useEffect(() => {
+    if (id) {
+      fetch(`http://localhost:5000/api/produto/${id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setNomeProduto(data.nome);
+          setCodigoProduto(data.codigo);
+          const materiasConvertidas = data.materiais.map((m: any) => ({
+            materiaPrima: m.codigo,
+            unidade: m.unidade,
+            preco_unitario: m.preco_unitario.toString(),
+            preco: (m.preco_unitario * m.quantidade).toFixed(2),
+            quantidade: m.quantidade.toString(),
+            textoBusca: m.nome,
+          }));
+          setMaterias(materiasConvertidas);
+        })
+        .catch((err) => console.error("Erro ao buscar produto:", err));
+    }
+  }, [id]);
 
   const handleAddCampo = () => {
     setMaterias([
@@ -122,15 +141,12 @@ export function AdicionarProduto() {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/produto", data);
-      toast.success('Produto adicionado com sucesso!');
-      setNomeProduto("");
-      setCodigoProduto("");
-      setMaterias([{ materiaPrima: "", unidade: "", preco_unitario: "", preco: "", quantidade: "", textoBusca: "" }]);
+      await axios.put(`http://localhost:5000/api/produto/${id}`, data); // ✅ PUT para editar
+      toast.success('Produto atualizado com sucesso!');
       navigate("/listaprodutos");
     } catch (error) {
-      console.error("Erro ao enviar:", error);
-      toast.error('Erro ao enviar produto. Tente novamente');
+      console.error("Erro ao atualizar:", error);
+      toast.error('Erro ao atualizar produto. Tente novamente');
     }
   };
 
@@ -166,12 +182,11 @@ export function AdicionarProduto() {
             />
           </div>
           <div className="title1">
-            <h2>Adicionar produto</h2>
+            <h2>Editar produto</h2>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="form">
-
           <input
             type="text"
             placeholder="Código do produto"
@@ -248,8 +263,8 @@ export function AdicionarProduto() {
                 value={campo.preco ? `R$ ${parseFloat(campo.preco).toFixed(2)}` : ""}
                 readOnly
                 className="input readonly preco"
-              />
-
+                />
+                
             </div>
           ))}
 
@@ -261,7 +276,6 @@ export function AdicionarProduto() {
             >
               + Adicionar Matéria Prima
             </button>
-            
 
             <button
               type="button"

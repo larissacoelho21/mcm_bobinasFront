@@ -11,6 +11,7 @@ type Materia = {
   codigo: number;
   nome: string;
   valor: number;
+  data: Date;
 };
 
 export function VisualizarMateriaPrima() {
@@ -60,19 +61,23 @@ export function VisualizarMateriaPrima() {
           </div>
 
           <div className="valor-column">
-            <span>Valor unidade atualizado</span>
+            <span>Valor unidade</span>
+          </div>
+
+          <div className="data-column">
+            <span>Data criação</span>
           </div>
         </header>
 
         <div className="tabela-materia">
           {/* Caixa de pesquisa */}
-        <input
-          type="text"
-          placeholder="Buscar matéria-prima..."
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-          className="input-busca-lista"
-        />
+          <input
+            type="text"
+            placeholder="Buscar matéria-prima..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            className="input-busca-lista"
+          />
           <table>
             <tbody>
               {materiasFiltradas.map((materia, index) => (
@@ -85,6 +90,9 @@ export function VisualizarMateriaPrima() {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
+                  </td>
+                  <td className="data">
+                    {new Date(materia.data).toLocaleDateString("pt-BR")}
                   </td>
                 </tr>
               ))}

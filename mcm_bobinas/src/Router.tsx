@@ -8,6 +8,7 @@ import { SimularPedido } from "./Pages/SimularProduto";
 import { VisualizarProduto } from "./Pages/VisualizarProduto";
 import { ListaProdutos } from "./Pages/ListaProduto";
 import { VisualizarMateriaPrima } from "./Pages/ListaMateriaPrima";
+import { EditarProduto } from "./Pages/UpdateProduto";
 /* import { SimulacaoPedido } from "./Components/Simulacao Pedido/SimulacaoPedido"; */
 
 const Router: React.FC = () => {
@@ -25,6 +26,7 @@ const Router: React.FC = () => {
         <Route path="/visualizarproduto" element={<VisualizarProduto />} />
         <Route path="/visualizarproduto/:id" element={<VisualizarProduto />} />
         <Route path="/visualizarmateria" element={<VisualizarMateriaPrima />} />
+        <Route path="/editarproduto" element={<EditarProduto />} />
 
         {/* Components */}
         <Route path="/navbar" element={<NavBar />} />

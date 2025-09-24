@@ -107,8 +107,14 @@
 
 /* === Rodapé da Tabela === */
 .tabela-footer {
-  margin-top: 1vw;
-  text-align: right;
+  display: flex;
+  margin-bottom: 1vw;
+  text-align: start;
+  position: relative;
+  align-content: flex-end;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+
 }
 
 .total-text {

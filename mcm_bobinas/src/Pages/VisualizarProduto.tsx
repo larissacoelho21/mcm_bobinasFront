@@ -6,8 +6,12 @@ import { NavBar } from "../Components/NavBar/NavBar";
 import "../Css/VisualizarProduto.css";
 
 import Voltar from "../assets/seta.png";
+import Lixeira from "../assets/trash.png";
+import { toast } from "sonner";
+
 
 interface Material {
+  id: number;
   nome: string;
   valor: number;
   quantidade: number;
@@ -42,6 +46,24 @@ export function VisualizarProduto() {
   const handleVoltar = () => {
     navigate(-1);
   };
+
+  const handleClickProduto = (id: number) => {
+    navigate(`/editarproduto/${id}`);
+  };
+
+  const handleDeleteProduto = async () => {
+    try {
+      await fetch(`http://localhost:5000/api/produto/${id}`, {
+        method: "DELETE",
+      });
+      toast.success("Produto excluído com sucesso!");
+      navigate("/listaprodutos");
+    } catch (err) {
+      console.error("Erro ao excluir produto:", err);
+      toast.error("Erro ao excluir produto. Tente novamente.");
+    }
+  };
+
 
   return (
     <div className="layout-container">
@@ -101,9 +123,35 @@ export function VisualizarProduto() {
           </table>
 
           <div className="tabela-footer">
+
+            <button
+              type="button"
+              className="remove-produto"
+              onClick={handleDeleteProduto}
+            >
+              <img
+                src={Lixeira}
+                alt="Remover último"
+                className="icon-lixeira"
+              />
+              <p>Excluir produto</p>
+            </button>
+
+
+            <button
+              type="button"
+              className="editar-produto"
+              onClick={() => handleClickProduto(Number(id))}
+            >
+              <p>Editar produto</p>
+            </button>
+
+
             <p className="total-text">
               Total: <span>{formatarMoeda(total)}</span>
             </p>
+
+
           </div>
         </div>
       </div>
