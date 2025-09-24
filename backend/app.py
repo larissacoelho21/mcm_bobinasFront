@@ -143,6 +143,45 @@ def upload_file():
         from io import BytesIO
         import sqlite3
 
+        # --- Utilitários de texto e chave ---
+        def limpar_texto(s):
+            s = s or ""
+            s = s.strip()
+            s = re.sub(r'^[-\s]+', '', s)      # remove hífen/espaços no início
+            s = re.sub(r'\s+', ' ', s)         # normaliza espaços
+            return s
+
+        def normalizar_busca(s):
+            s = (s or "").lower().strip()
+            s = re.sub(r'[^a-z0-9x.\s]', ' ', s)
+            s = re.sub(r'\s+', ' ', s)
+            return s
+
+        def extract_dim_key(s):
+            sn = normalizar_busca(s)
+            m = re.search(r'(\d+(?:\.\d+)?)\s*[x]\s*(\d+(?:\.\d+)?)', sn)
+            dim_key = None
+            if m:
+                d1 = m.group(1)
+                d2 = m.group(2)
+                dim_key = f"{d1}x{d2}"
+            has_cq = ('canto quadrado' in sn)
+            return dim_key, has_cq
+
+        def prefixo_semelhanca(s):
+            """
+            - Regra geral: 3 primeiras palavras
+            - Se começar com 'fio' (e não for 'fio esmaltado'): usar 2 palavras após 'fio'
+            """
+            palavras = normalizar_busca(s).split()
+            if not palavras:
+                return ""
+            if palavras[0] == "fio":
+                if len(palavras) >= 2 and palavras[1] == "esmaltado":
+                    return " ".join(palavras[:2])  # "fio esmaltado"
+                return " ".join(palavras[1:3])     # duas após 'fio'
+            return " ".join(palavras[:3])
+
         conteudo_pdf = BytesIO(file.read())
 
         with pdfplumber.open(conteudo_pdf) as pdf:
@@ -154,7 +193,7 @@ def upload_file():
             texto_emitente = bloco.extract_text() or "Emitente não identificado"
 
             # Data de emissão
-            texto_completo = primeira_pagina.extract_text()
+            texto_completo = primeira_pagina.extract_text() or ""
             padrao_data = r'\b(?:DATA DA EMISS[ÃA]O)?\s*[:\-]?\s*(\d{2}/\d{2}/\d{4})\b'
             match = re.search(padrao_data, texto_completo)
             data_emissao = match.group(1) if match else "Data não encontrada"
@@ -171,7 +210,8 @@ def upload_file():
                             continue
 
                         if len(linha) >= 9 and linha[1] and linha[7] and linha[8]:
-                            if "DESCRIÇÃO DO PRODUTO" in linha[1].upper():
+                            cab = (linha[1] or "")
+                            if "DESCRIÇÃO DO PRODUTO" in cab.upper():
                                 continue
 
                             codigos = linha[0].split("\n") if linha[0] else []
@@ -180,13 +220,14 @@ def upload_file():
                             valores_unit = linha[7].split("\n") if linha[7] else []
                             valores_total = linha[8].split("\n") if linha[8] else []
 
-                            total_itens = max(len(descricoes), len(valores_unit))
+                            total_itens = max(len(descricoes), len(valores_unit), len(codigos))
 
                             for i in range(total_itens):
-                                codigo = codigos[i] if i < len(codigos) else ""
-                                descricao = descricoes[i] if i < len(descricoes) else "Produto não identificado"
-                                quantidade = quantidades[i] if i < len(quantidades) else "1"
-                                valor_unit = valores_unit[i] if i < len(valores_unit) else "0,00"
+                                codigo_pdf = (codigos[i].strip() if i < len(codigos) and codigos[i] else "")
+                                descricao_pdf_raw = (descricoes[i] if i < len(descricoes) else "Produto não identificado")
+                                descricao_pdf = limpar_texto(descricao_pdf_raw)
+                                quantidade = (quantidades[i] if i < len(quantidades) else "1")
+                                valor_unit = (valores_unit[i] if i < len(valores_unit) else "0,00")
 
                                 try:
                                     preco_unitario = float(valor_unit.replace(".", "").replace(",", "."))
@@ -195,6 +236,59 @@ def upload_file():
                                     preco_unitario = 0.0
                                     qtd = 1.0
 
+                                # --- Busca preferencial por dimensão + 'canto quadrado' ---
+                                dim_key, has_cq = extract_dim_key(descricao_pdf)
+                                codigo_final = None
+                                descricao_final = None
+                                unidade_final = "UN"  # valor padrão
+
+                                if dim_key and has_cq:
+                                    cursor.execute("""
+                                        SELECT codigo, descricao_produto, unidade
+                                        FROM historico
+                                        WHERE LOWER(descricao_produto) LIKE ?
+                                          AND LOWER(descricao_produto) LIKE '%canto quadrado%'
+                                        ORDER BY ROWID ASC
+                                        LIMIT 1
+                                    """, (f"%{dim_key}%",))
+                                    achado = cursor.fetchone()
+                                    if achado:
+                                        codigo_final, descricao_final, unidade_final = achado
+
+                                if not codigo_final:
+                                    prefixo = prefixo_semelhanca(descricao_pdf)
+                                    if prefixo:
+                                        cursor.execute("""
+                                            SELECT codigo, descricao_produto, unidade
+                                            FROM historico
+                                            WHERE LOWER(descricao_produto) LIKE ?
+                                            ORDER BY ROWID ASC
+                                            LIMIT 1
+                                        """, (prefixo + '%',))
+                                        achado = cursor.fetchone()
+                                        if achado:
+                                            codigo_final, descricao_final, unidade_final = achado
+
+                                if not codigo_final:
+                                    descricao_busca = normalizar_busca(descricao_pdf)
+                                    cursor.execute("""
+                                        SELECT codigo, descricao_produto, unidade
+                                        FROM historico
+                                        WHERE LOWER(REPLACE(descricao_produto, '-', '')) LIKE ?
+                                        ORDER BY ROWID ASC
+                                        LIMIT 1
+                                    """, (f"%{descricao_busca}%",))
+                                    achado = cursor.fetchone()
+                                    if achado:
+                                        codigo_final, descricao_final, unidade_final = achado
+
+                                if not codigo_final:
+                                    codigo_final = codigo_pdf
+                                    descricao_final = descricao_pdf
+                                    unidade_final = "UN"
+
+                                print(f"[INSERIR] codigo={codigo_final} | nome='{descricao_final}' | unidade={unidade_final}")
+
                                 try:
                                     cursor.execute("""
                                         INSERT INTO historico (
@@ -202,15 +296,16 @@ def upload_file():
                                             unidade, quantidade, preco_unitario, emissao
                                         ) VALUES (?, ?, ?, ?, ?, ?, ?)
                                     """, (
-                                        codigo.strip(),
+                                        codigo_final,
                                         texto_emitente,
-                                        descricao.strip(),
-                                        "UN",
+                                        descricao_final,
+                                        unidade_final,
                                         qtd,
                                         preco_unitario,
                                         data_emissao
                                     ))
-                                except Exception:
+                                except Exception as e:
+                                    print(f"[ERRO INSERT] {e}")
                                     continue
 
             conn.commit()
@@ -222,6 +317,7 @@ def upload_file():
             'emissao': data_emissao,
             'fornecedor': texto_emitente
         })
+
 
     elif filename.endswith('.xml'):
         from bs4 import BeautifulSoup
