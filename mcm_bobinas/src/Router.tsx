@@ -9,7 +9,6 @@ import { VisualizarProduto } from "./Pages/VisualizarProduto";
 import { ListaProdutos } from "./Pages/ListaProduto";
 import { VisualizarMateriaPrima } from "./Pages/ListaMateriaPrima";
 import { EditarProduto } from "./Pages/UpdateProduto";
-import TratarDivergencia from "./Pages/TratarDivergencia"; 
 
 const Router: React.FC = () => {
   return (
@@ -27,8 +26,6 @@ const Router: React.FC = () => {
         <Route path="/visualizarproduto/:id" element={<VisualizarProduto />} />
         <Route path="/visualizarmateria" element={<VisualizarMateriaPrima />} />
         <Route path="/editarproduto/:id" element={<EditarProduto />} />
-        <Route path="/divergencia/:descricao" element={<TratarDivergencia />} /> 
-
         {/* Components */}
         <Route path="/navbar" element={<NavBar />} />
         <Route path="/menu" element={<MenuLateral />} />

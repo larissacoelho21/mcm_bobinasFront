@@ -83,11 +83,7 @@ export function VisualizarMateriaPrima() {
               {materiasFiltradas.map((materia, index) => (
                 <tr key={index}>
                   <td className="codigo">{materia.codigo}</td>
-                  <td
-                    className="link-produto"
-                    onClick={() => navigate(`/divergencia/${materia.codigo}`)}
-                    style={{ cursor: "pointer", color: "#007bff" }}
-                  >
+                  <td className="nome-produto">
                     {materia.nome}
                   </td>
                   <td className="preco-materia">
