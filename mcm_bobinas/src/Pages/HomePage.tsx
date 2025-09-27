@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ importado
+import { useNavigate } from "react-router-dom";
 import { MenuLateral } from "../Components/Menu Lateral/MenuLateral";
 import { NavBar } from "../Components/NavBar/NavBar";
 import "../Css/HomePage.css";
@@ -14,21 +14,35 @@ type ProdutoFinal = {
 export function HomePage() {
   const [produtos, setProdutos] = useState<ProdutoFinal[]>([]);
   const [busca, setBusca] = useState("");
-  const navigate = useNavigate(); // ✅ inicializado
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:5000/api/produtos-com-preco")
       .then((res) => res.json())
-      .then((data: ProdutoFinal[]) => setProdutos(data))
+      .then((data) => {
+        console.log("API retornou:", data);
+
+        // Se a API retornar { produtos: [...] }
+        if (Array.isArray(data)) {
+          setProdutos(data);
+        } else if (Array.isArray(data.produtos)) {
+          setProdutos(data.produtos);
+        } else {
+          console.error("Formato inesperado da API:", data);
+          setProdutos([]); // fallback para evitar erro
+        }
+      })
       .catch((err) => console.error("Erro ao buscar produtos:", err));
   }, []);
 
-  const filtrados = produtos.filter((p) =>
-    p.nome.toLowerCase().includes(busca.toLowerCase())
-  );
+  const filtrados = Array.isArray(produtos)
+    ? produtos.filter((p) =>
+        p.nome.toLowerCase().includes(busca.toLowerCase())
+      )
+    : [];
 
   const handleClickProduto = (id: string) => {
-    navigate(`/visualizarproduto/${id}`); // ✅ navegação
+    navigate(`/visualizarproduto/${id}`);
   };
 
   return (
@@ -68,13 +82,15 @@ export function HomePage() {
                   <td className="id-home">{produto.id}</td>
                   <td
                     className="link-produto"
-                    onClick={() => handleClickProduto(produto.id)} // ✅ clique
+                    onClick={() => handleClickProduto(produto.id)}
                     style={{ cursor: "pointer", color: "#007bff" }}
                   >
                     {produto.nome}
                   </td>
                   <td>{produto.criado_em}</td>
-                  <td className="preco-total">R$ {produto.preco_total.toFixed(2)}</td>
+                  <td className="preco-total">
+                    R$ {produto.preco_total.toFixed(2)}
+                  </td>
                 </tr>
               ))}
             </tbody>

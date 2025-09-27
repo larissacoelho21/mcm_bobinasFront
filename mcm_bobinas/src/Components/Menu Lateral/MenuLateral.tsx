@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { toast } from "sonner"; // ✅ importar o sonner
 import logonome from "../../assets/logonome.png";
 import upload from "../../assets/Upload.png";
 import "./MenuLateral.css";
@@ -18,7 +19,7 @@ export function MenuLateral() {
       const filename = file.name.toLowerCase();
 
       if (!filename.endsWith(".pdf") && !filename.endsWith(".xml")) {
-        alert("Tipo de arquivo não permitido. Apenas PDF ou XML.");
+        toast.error("Tipo de arquivo não permitido. Apenas PDF ou XML.");
         return;
       }
 
@@ -36,15 +37,25 @@ export function MenuLateral() {
         const result = await response.json();
 
         if (!response.ok) {
-          alert(`Erro: ${result.error || "Tipo de arquivo não permitido."}`);
+          toast.error(`Erro: ${result.error || "Tipo de arquivo não permitido."}`);
           return;
         }
 
         console.log("✅ Upload concluído:", result);
-        alert(`Arquivo enviado: ${result.filename}`);
+
+        // ✅ Mensagem de sucesso
+        toast.success(`Arquivo enviado: ${result.filename}`);
+
+        // ✅ Se o backend retornar divergências, exibe aviso
+        if (result.avisos && result.avisos.length > 0) {
+          result.avisos.forEach((aviso: string) => {
+            toast.warning(aviso);
+          });
+        }
+
       } catch (error) {
         console.error("❌ Erro no upload:", error);
-        alert("Erro ao enviar o arquivo.");
+        toast.error("Erro ao enviar o arquivo.");
       }
     }
   };

@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 
 interface Material {
-  id: number;
+  id: string;
   nome: string;
   valor: number;
   quantidade: number;
@@ -47,7 +47,7 @@ export function VisualizarProduto() {
     navigate(-1);
   };
 
-  const handleClickProduto = (id: number) => {
+  const handleClickProduto = (id: string) => {
     navigate(`/editarproduto/${id}`);
   };
 
@@ -141,7 +141,7 @@ export function VisualizarProduto() {
             <button
               type="button"
               className="editar-produto"
-              onClick={() => handleClickProduto(Number(id))}
+              onClick={() => handleClickProduto(String(id))}
             >
               <p>Editar produto</p>
             </button>
