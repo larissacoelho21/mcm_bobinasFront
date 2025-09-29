@@ -1,0 +1,19 @@
+.submit-button-update{
+    margin-top: 1.1vw;
+    width: 15%;
+    padding: 0.8vw;
+    font-size: 0.75vw;
+    font-weight: 600;
+    color: #fff;
+    background: #333;
+    border: none;
+    border-radius: 1vw;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    box-shadow: 0px 8px 10px rgba(0, 0, 0, 0.226);
+
+}
+
+.submit-button-update:hover {
+    background: #555;
+}

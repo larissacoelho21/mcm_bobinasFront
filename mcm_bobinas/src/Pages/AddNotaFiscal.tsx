@@ -178,7 +178,7 @@ export function AdicionarNotaFiscal() {
           />
           <input type="date" placeholder="Vencimento" />
 
-          <h3>Dados do produto</h3>
+          <h3>Dados da máteria prima</h3>
           {produtos.map((produto, index) => (
             <div key={index} className="campo-produto">
               <input
@@ -220,7 +220,7 @@ export function AdicionarNotaFiscal() {
 
           <div className="botoes">
             <button type="button" onClick={handleAddProduto} className="add-btn">
-              + Adicionar outro produto
+              + Adicionar outra matéria prima
             </button>
 
             <button

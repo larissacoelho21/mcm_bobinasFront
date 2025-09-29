@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import "../Css/ListaMateriaPrima.css";
@@ -6,8 +6,11 @@ import { NavBar } from "../Components/NavBar/NavBar";
 import { MenuLateral } from "../Components/Menu Lateral/MenuLateral";
 
 import Voltar from "../assets/seta.png";
+import Editar from "../assets/pencil.png";
+
 
 type Materia = {
+  id: string;
   codigo: number;
   nome: string;
   valor: number;
@@ -16,6 +19,7 @@ type Materia = {
 
 export function VisualizarMateriaPrima() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [materias, setMaterias] = useState<Materia[]>([]);
   const [busca, setBusca] = useState(""); // ✅ estado da busca
 
@@ -28,6 +32,10 @@ export function VisualizarMateriaPrima() {
 
   const handleVoltar = () => {
     navigate(-1);
+  };
+
+  const handleClickProduto = (id: string) => {
+    navigate(`/editarmateriaprima/${id}`);
   };
 
   const materiasFiltradas = materias.filter((m) =>
@@ -83,9 +91,7 @@ export function VisualizarMateriaPrima() {
               {materiasFiltradas.map((materia, index) => (
                 <tr key={index}>
                   <td className="codigo">{materia.codigo}</td>
-                  <td className="nome-produto">
-                    {materia.nome}
-                  </td>
+                  <td className="nome-produto">{materia.nome}</td>
                   <td className="preco-materia">
                     R${" "}
                     {materia.valor.toLocaleString("pt-BR", {
@@ -95,6 +101,14 @@ export function VisualizarMateriaPrima() {
                   </td>
                   <td className="data">
                     {new Date(materia.data).toLocaleDateString("pt-BR")}
+
+                    <button
+                      type="button"
+                      className="editar-produto"
+                      onClick={() => handleClickProduto(String(id))}
+                    >
+                      <img src={Editar} alt="Editar" className="icon-editar" />
+                    </button>
                   </td>
                 </tr>
               ))}

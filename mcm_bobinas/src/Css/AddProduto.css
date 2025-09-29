@@ -61,7 +61,7 @@ div.Container {
 }
 
 .input::placeholder {
-    font-size: 0.8vw;
+    font-size: 1vw;
     color: #696969;
     font-weight: 300;
 }
@@ -100,7 +100,7 @@ div.Container {
     color: #696969;
     font-weight: 400;
     transition: border 0.2s ease;
-    font-size: 0.6vw;
+    font-size: 0.8vw;
 }
 
 .input::placeholder {

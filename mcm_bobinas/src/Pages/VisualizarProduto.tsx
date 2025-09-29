@@ -7,8 +7,8 @@ import "../Css/VisualizarProduto.css";
 
 import Voltar from "../assets/seta.png";
 import Lixeira from "../assets/trash.png";
+import Editar from "../assets/pencil.png";
 import { toast } from "sonner";
-
 
 interface Material {
   id: string;
@@ -64,7 +64,6 @@ export function VisualizarProduto() {
     }
   };
 
-
   return (
     <div className="layout-container">
       <div className="nav">
@@ -94,64 +93,58 @@ export function VisualizarProduto() {
         </header>
 
         <div className="tabela-container">
-          <table>
-            <thead>
-
-              <tr>
-                <th>Matéria Prima</th>
-                <th>Valor (R$)</th>
-                <th>Quantidade</th>
-                <th>Unidade medida</th>
-                <th>Valor Total (R$)</th>
-              </tr>
-
-            </thead>
-            <tbody>
-              {materiais.map((material, index) => {
-                const totalItem = material.valor * material.quantidade;
-                return (
-                  <tr key={index}>
-                    <td>{material.nome}</td>
-                    <td>{formatarMoeda(material.valor)}</td>
-                    <td>{material.quantidade}</td>
-                    <td>{material.unidade}</td>
-                    <td>{formatarMoeda(totalItem)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="tabela-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Matéria Prima</th>
+                  <th>Valor (R$)</th>
+                  <th>Quantidade</th>
+                  <th>Unidade medida</th>
+                  <th>Valor Total (R$)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {materiais.map((material, index) => {
+                  const totalItem = material.valor * material.quantidade;
+                  return (
+                    <tr key={index}>
+                      <td>{material.nome}</td>
+                      <td>{formatarMoeda(material.valor)}</td>
+                      <td>{material.quantidade}</td>
+                      <td>{material.unidade}</td>
+                      <td>{formatarMoeda(totalItem)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
           <div className="tabela-footer">
-
-            <button
-              type="button"
-              className="remove-produto"
-              onClick={handleDeleteProduto}
-            >
-              <img
-                src={Lixeira}
-                alt="Remover último"
-                className="icon-lixeira"
-              />
-              <p>Excluir produto</p>
-            </button>
-
-
-            <button
-              type="button"
-              className="editar-produto"
-              onClick={() => handleClickProduto(String(id))}
-            >
-              <p>Editar produto</p>
-            </button>
-
-
-            <p className="total-text">
-              Total: <span>{formatarMoeda(total)}</span>
-            </p>
-
-
+            <div className="right">
+              <button
+                type="button"
+                className="remove-produto"
+                onClick={handleDeleteProduto}
+              >
+                <img src={Lixeira} alt="Remover" className="icon-lixeira" />
+                <p>Excluir produto</p>
+              </button>
+              <button
+                type="button"
+                className="editar-produto"
+                onClick={() => handleClickProduto(String(id))}
+              >
+                <img src={Editar} alt="Editar" className="icon-editar" />
+                <p>Editar produto</p>
+              </button>
+            </div>
+            <div className="left">
+              <p className="total-text">
+                Total: <span>{formatarMoeda(total)}</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>

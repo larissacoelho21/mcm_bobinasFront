@@ -25,7 +25,7 @@ type CampoMateriaPrima = {
   textoBusca: string;
 };
 
-export function EditarProduto() {
+export function EditarMateriaPrima() {
   const navigate = useNavigate();
   const { id } = useParams(); // id numérico na URL
 
@@ -39,7 +39,7 @@ export function EditarProduto() {
     fetch("http://localhost:5000/api/materias")
       .then((res) => res.json())
       .then((data: MateriaPrima[]) => setMateriasPrimas(data))
-      .catch((err) => console.error("Erro ao buscar matérias-primas:", err));
+      .catch((err) => console.error("Erro ao buscar matéria-prima", err));
   }, []);
 
   // Carrega produto pelo id
@@ -50,7 +50,7 @@ export function EditarProduto() {
       .then((res) => res.json())
       .then((data) => {
         if (!data || data.erro) {
-          toast.error("Produto não encontrado");
+          toast.error("Matéria prima não encontrada");
           return;
         }
 
@@ -59,7 +59,7 @@ export function EditarProduto() {
         const materiasConvertidas = Array.isArray(data.materiais)
           ? data.materiais.map((m: any) => {
               const qtd = Number(m.quantidade ?? 0);
-              const pu = Number(m.valor?? 0);
+              const pu = Number(m.valor ?? 0);
               return {
                 materiaPrima: String(m.codigo ?? ""),
                 unidade: String(m.unidade ?? ""),
@@ -89,24 +89,6 @@ export function EditarProduto() {
       .catch((err) => console.error("Erro ao buscar produto:", err));
   }, [id]);
 
-  const handleAddCampo = () => {
-    setMaterias((prev) => [
-      ...prev,
-      {
-        materiaPrima: "",
-        unidade: "",
-        preco_unitario: "0",
-        preco: "0",
-        quantidade: "0",
-        textoBusca: "",
-      },
-    ]);
-  };
-
-  const handleRemoveCampo = () => {
-    setMaterias((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
-  };
-
   const handleChange = async (
     index: number,
     field: keyof CampoMateriaPrima,
@@ -127,7 +109,9 @@ export function EditarProduto() {
         const resultado = await res.json();
 
         newMaterias[index].unidade = String(resultado.unidade ?? "");
-        newMaterias[index].preco_unitario = String(resultado.preco_unitario ?? "0");
+        newMaterias[index].preco_unitario = String(
+          resultado.preco_unitario ?? "0"
+        );
         newMaterias[index].textoBusca =
           materiasPrimas.find((m) => m.codigo === value)?.nome || "";
 
@@ -165,16 +149,18 @@ export function EditarProduto() {
 
     const payload = {
       nomeProduto,
-      materias: materias.map(({ textoBusca, preco, preco_unitario, ...rest }) => rest),
+      materias: materias.map(
+        ({ textoBusca, preco, preco_unitario, ...rest }) => rest
+      ),
     };
 
     try {
       await axios.put(`http://localhost:5000/api/produto/${id}`, payload);
-      toast.success("Produto atualizado com sucesso!");
-      navigate("/listaprodutos");
+      toast.success("Matéria prima atualizada com sucesso!");
+      navigate("/visualizarmateria");
     } catch (error) {
       console.error("Erro ao atualizar:", error);
-      toast.error("Erro ao atualizar produto. Tente novamente");
+      toast.error("Erro ao atualizar materia prima. Tente novamente");
     }
   };
 
@@ -186,6 +172,19 @@ export function EditarProduto() {
     return materiasPrimas.filter((m) =>
       m.nome.toLowerCase().includes(texto.toLowerCase())
     );
+  };
+
+  const handleDeleteProduto = async () => {
+    try {
+      await fetch(`http://localhost:5000/api/produto/${id}`, {
+        method: "DELETE",
+      });
+      toast.success("Materia prima excluída com sucesso!");
+      navigate("/visualizarmateria");
+    } catch (err) {
+      console.error("Erro ao excluir produto:", err);
+      toast.error("Erro ao excluir matéria prima. Tente novamente.");
+    }
   };
 
   return (
@@ -210,21 +209,12 @@ export function EditarProduto() {
             />
           </div>
           <div className="title1">
-            <h2>Editar produto</h2>
+            <h2>Editar matéria prima</h2>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="form">
-          <input
-            type="text"
-            placeholder="Nome do produto"
-            value={nomeProduto}
-            onChange={(e) => setNomeProduto(e.target.value)}
-            className="input"
-            required
-          />
-
-          <label className="label">Matéria prima utilizada:</label>
+          <label className="label">Matéria prima:</label>
 
           {materias.map((campo, index) => (
             <div key={index} className="campo-materia">
@@ -291,24 +281,11 @@ export function EditarProduto() {
           <div className="botoes">
             <button
               type="button"
-              onClick={handleAddCampo}
-              className="add-button"
+              className="remove-produto"
+              onClick={handleDeleteProduto}
             >
-              + Adicionar Matéria Prima
-            </button>
-
-            <button
-              type="button"
-              onClick={handleRemoveCampo}
-              className="remove-button"
-              disabled={materias.length <= 1}
-            >
-              <img
-                src={Lixeira}
-                alt="Remover último"
-                className="icon-lixeira"
-              />
-              <p>Remover último campo</p>
+              <img src={Lixeira} alt="Remover" className="icon-lixeira" />
+              <p>Excluir Matéria prima</p>
             </button>
           </div>
 

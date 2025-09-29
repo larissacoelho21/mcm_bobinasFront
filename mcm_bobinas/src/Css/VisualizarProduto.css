@@ -62,12 +62,10 @@
 
 /* === TABELA === */
 .tabela-container {
-  height: 32.5vw;
-  position: static;
+  height: 32vw;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
 
   overflow-y: auto;
-  /* ativa scroll vertical */
   overflow-x: hidden;
 }
 
@@ -80,13 +78,12 @@
 
 .tabela-container thead th {
   border-bottom: 0.2vw solid #e5e5e5;
+  background-color: #fff;
   font-size: 1vw;
   padding: 0.8vw;
   text-align: left;
   font-weight: 600;
   position: sticky;
-  top: 0;
-  z-index: 2;
 }
 
 .tabela-container td {
@@ -107,18 +104,55 @@
 
 /* === Rodapé da Tabela === */
 .tabela-footer {
-  display: flex;
-  margin-bottom: 1vw;
-  text-align: start;
-  position: relative;
-  align-content: flex-end;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  margin-top: 2vw;
 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 2vw;
 }
 
 .total-text {
   font-size: 1.1vw;
   color: #e60000;
   font-weight: bold;
+}
+
+.remove-produto,
+.editar-produto {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.3vw;
+}
+
+.remove-produto p,
+.editar-produto p {
+  color: #696969;
+  font-size: 0.7vw;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 1vw;
+}
+
+.remove-produto:hover, .editar-produto:hover {
+  color: #000000;
+}
+
+.icon-lixeira,
+.icon-editar {
+  width: 1.1vw;
+  /* responsivo */
+  height: auto;
 }

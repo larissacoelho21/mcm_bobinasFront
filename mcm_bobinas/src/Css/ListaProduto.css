@@ -20,7 +20,7 @@
   align-items: center;
   background-color: #fff;
   padding: 1vw 1.5vw;
-  border-radius: 0.6vw;
+  border-radius: 1vw;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 1.2vw;
   font-size: 1vw;
@@ -50,7 +50,7 @@
 /* === Caixa da tabela === */
 .tabela-produto {
   background-color: #fff;
-  border-radius: 0.6vw;
+  border-radius: 1vw;
   padding: 1vw;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
 
