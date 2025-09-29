@@ -9,7 +9,7 @@ import { VisualizarProduto } from "./Pages/VisualizarProduto";
 import { ListaProdutos } from "./Pages/ListaProduto";
 import { VisualizarMateriaPrima } from "./Pages/ListaMateriaPrima";
 import { EditarProduto } from "./Pages/UpdateProduto";
-import { EditarMateriaPrima } from "./Pages/UpdateMateriaPrima";
+import { UpdateMateriaPrima } from "./Pages/UpdateMateriaPrima";
 
 const Router: React.FC = () => {
   return (
@@ -28,8 +28,7 @@ const Router: React.FC = () => {
         <Route path="/visualizarmateria" element={<VisualizarMateriaPrima />} />
         <Route path="/editarproduto/:id" element={<EditarProduto />} />
         <Route path="/editarproduto" element={<EditarProduto />} />
-        <Route path="/editarmateriaprima/:id" element={<EditarMateriaPrima />} />
-        <Route path="/editarmateriaprima/" element={<EditarMateriaPrima />} />
+        <Route path="/editarmateriaprima/:id" element={<UpdateMateriaPrima />} />
 
         {/* Components */}
         <Route path="/navbar" element={<NavBar />} />

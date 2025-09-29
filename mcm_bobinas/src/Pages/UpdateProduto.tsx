@@ -42,31 +42,32 @@ export function EditarProduto() {
       .catch((err) => console.error("Erro ao buscar matérias-primas:", err));
   }, []);
 
-  // Carrega produto pelo id
+  // Carrega ficha técnica pelo id
   useEffect(() => {
     if (!id) return;
 
-    fetch(`http://localhost:5000/api/produto/${id}`)
+    fetch(`http://localhost:5000/api/fichas_tecnicas/${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (!data || data.erro) {
-          toast.error("Produto não encontrado");
+          toast.error("Ficha técnica não encontrada");
           return;
         }
 
-        setNomeProduto(String(data.nome ?? ""));
+        // Ajuste conforme o backend: se vier "descricao" em vez de "nome"
+        setNomeProduto(String(data.nome ?? data.descricao ?? ""));
 
-        const materiasConvertidas = Array.isArray(data.materiais)
-          ? data.materiais.map((m: any) => {
+        const materiasConvertidas = Array.isArray(data.materiais ?? data.itens)
+          ? (data.materiais ?? data.itens).map((m: any) => {
               const qtd = Number(m.quantidade ?? 0);
-              const pu = Number(m.valor?? 0);
+              const pu = Number(m.preco_unitario ?? m.valor ?? 0);
               return {
-                materiaPrima: String(m.codigo ?? ""),
+                materiaPrima: String(m.codigo ?? m.codigo_materia ?? ""),
                 unidade: String(m.unidade ?? ""),
                 preco_unitario: pu.toString(),
                 preco: (qtd * pu).toFixed(2),
                 quantidade: qtd.toString(),
-                textoBusca: String(m.nome ?? ""),
+                textoBusca: String(m.nome ?? m.descricao ?? ""),
               } as CampoMateriaPrima;
             })
           : [];
@@ -86,9 +87,10 @@ export function EditarProduto() {
               ]
         );
       })
-      .catch((err) => console.error("Erro ao buscar produto:", err));
+      .catch((err) => console.error("Erro ao buscar ficha técnica:", err));
   }, [id]);
 
+  // ➕ Adicionar novo campo
   const handleAddCampo = () => {
     setMaterias((prev) => [
       ...prev,
@@ -103,10 +105,12 @@ export function EditarProduto() {
     ]);
   };
 
+  // ➖ Remover último campo
   const handleRemoveCampo = () => {
     setMaterias((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
   };
 
+  // Atualiza campos
   const handleChange = async (
     index: number,
     field: keyof CampoMateriaPrima,
@@ -152,11 +156,15 @@ export function EditarProduto() {
     setMaterias(newMaterias);
   };
 
+  // Salvar alterações (update em fichas_tecnicas)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const invalido =
-      !nomeProduto || materias.some((m) => !m.materiaPrima || !m.quantidade);
+      !nomeProduto ||
+      materias.some(
+        (m) => !m.materiaPrima || !m.textoBusca || Number(m.quantidade) <= 0
+      );
 
     if (invalido) {
       toast.warning("Preencha todos os campos!");
@@ -165,22 +173,24 @@ export function EditarProduto() {
 
     const payload = {
       nomeProduto,
-      materias: materias.map(({ textoBusca, preco, preco_unitario, ...rest }) => rest),
+      materias: materias.map(
+        ({ textoBusca, preco, preco_unitario, ...rest }) => rest
+      ),
     };
 
+    console.log("Payload enviado:", payload);
+
     try {
-      await axios.put(`http://localhost:5000/api/produto/${id}`, payload);
-      toast.success("Produto atualizado com sucesso!");
+      await axios.put(`http://localhost:5000/api/fichas_tecnicas/${id}`, payload);
+      toast.success("Ficha técnica atualizada com sucesso!");
       navigate("/listaprodutos");
     } catch (error) {
       console.error("Erro ao atualizar:", error);
-      toast.error("Erro ao atualizar produto. Tente novamente");
+      toast.error("Erro ao atualizar ficha técnica. Tente novamente");
     }
   };
 
-  const handleVoltar = () => {
-    navigate(-1);
-  };
+  const handleVoltar = () => navigate(-1);
 
   const getSugestoes = (texto: string) => {
     return materiasPrimas.filter((m) =>
@@ -246,9 +256,10 @@ export function EditarProduto() {
                       <div
                         key={`sugestao-${m.codigo}-${i}`}
                         className="sugestao"
-                        onClick={() =>
-                          handleChange(index, "materiaPrima", m.codigo)
-                        }
+                        onClick={() => {
+                          handleChange(index, "textoBusca", m.nome);
+                          handleChange(index, "materiaPrima", m.codigo);
+                        }}
                       >
                         {m.nome}
                       </div>

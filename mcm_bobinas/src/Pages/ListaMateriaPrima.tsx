@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import "../Css/ListaMateriaPrima.css";
@@ -8,10 +8,9 @@ import { MenuLateral } from "../Components/Menu Lateral/MenuLateral";
 import Voltar from "../assets/seta.png";
 import Editar from "../assets/pencil.png";
 
-
 type Materia = {
   id: string;
-  codigo: number;
+  codigo: string;
   nome: string;
   valor: number;
   data: Date;
@@ -19,9 +18,8 @@ type Materia = {
 
 export function VisualizarMateriaPrima() {
   const navigate = useNavigate();
-  const { id } = useParams();
   const [materias, setMaterias] = useState<Materia[]>([]);
-  const [busca, setBusca] = useState(""); // ✅ estado da busca
+  const [busca, setBusca] = useState(""); // estado da busca
 
   useEffect(() => {
     fetch("http://localhost:5000/api/materias")
@@ -88,8 +86,8 @@ export function VisualizarMateriaPrima() {
           />
           <table>
             <tbody>
-              {materiasFiltradas.map((materia, index) => (
-                <tr key={index}>
+              {materiasFiltradas.map((materia) => (
+                <tr key={materia.codigo}>
                   <td className="codigo">{materia.codigo}</td>
                   <td className="nome-produto">{materia.nome}</td>
                   <td className="preco-materia">
@@ -105,7 +103,7 @@ export function VisualizarMateriaPrima() {
                     <button
                       type="button"
                       className="editar-produto"
-                      onClick={() => handleClickProduto(String(id))}
+                      onClick={() => handleClickProduto(materia.codigo)} // ✅ agora passa o id correto
                     >
                       <img src={Editar} alt="Editar" className="icon-editar" />
                     </button>

@@ -119,6 +119,40 @@ def listar_unidades_e_preco_por_materia(codigo_materia):
         return jsonify({'erro': str(e)}), 500
     finally:
         conn.close()
+@app.route('/api/materias/<codigo_materia>', methods=['GET'])
+def buscar_materia_por_codigo(codigo_materia):
+    try:
+        conn = sqlite3.connect('produtos.db')
+        cursor = conn.cursor()
+        # Ajuste as colunas à sua tabela real. Exemplo abaixo:
+        cursor.execute("""
+            SELECT
+                codigo,                         -- código real
+                descricao_produto AS nome,      -- alias p/ "nome" no JSON
+                unidade AS unidade,             -- alias estável
+                preco_unitario AS preco_unitario,
+                emissao AS data                 -- alias p/ data
+            FROM materias_primas
+            WHERE codigo = ?
+        """, (codigo_materia,))
+        row = cursor.fetchone()
+
+        if row:
+            resultado = {
+                'codigo': row[0],
+                'nome': row[1],
+                'unidade': row[2],
+                'preco_unitario': row[3],
+                'data': row[4]
+            }
+            return jsonify(resultado)
+        else:
+            return jsonify({'erro': 'Matéria-prima não encontrada'}), 404
+    except Exception as e:
+        print("Erro em /api/materias/<codigo>:", e)
+        return jsonify({'erro': str(e)}), 500
+    finally:
+        conn.close()
 
 # Rota para listar produtos com preço total calculado
 @app.route('/api/produtos-com-preco', methods=['GET'])
@@ -463,27 +497,43 @@ def upload_file():
 
                         else:
                             for i in range(total_itens):
+                                preco_unitario = None  # 👈 PASSO 1: inicializa aqui
+
                                 codigo_pdf = codigos[i].strip() if i < len(codigos) else ""
                                 descricao_pdf = limpar_texto(descricoes[i]) if i < len(descricoes) else ""
                                 qtd = parse_num(quantidades[i]) if i < len(quantidades) else 0.0
                                 qtd = qtd or 0.0
-                                texto_filtrado = extrair_trecho_produtos(texto_pdf)                            # 🔽 Testa múltiplos métodos de extração de preço
+
                                 candidatos = []
                                 c1 = parse_num(valores_unit[i]) if i < len(valores_unit) else None
-                                if c1 is not None: candidatos.append(("tabela", c1))
+                                if c1 is not None:
+                                    candidatos.append(("tabela", c1))
 
                                 c2 = buscar_valor_por_palavra_chave(descricao_pdf, texto_pdf)
-                                if c2 is not None: candidatos.append(("palavra-chave", c2))
+                                if c2 is not None:
+                                    candidatos.append(("palavra-chave", c2))
 
                                 c3 = buscar_valor_por_regex(descricao_pdf, texto_pdf)
-                                if c3 is not None: candidatos.append(("regex", c3))
-                                
+                                if c3 is not None:
+                                    candidatos.append(("regex", c3))
+
                                 if candidatos:
-                                    metodo, preco_unitario = candidatos[0]  # pega o primeiro válido
+                                    metodo, preco_unitario = candidatos[0]
                                     print(f"[INFO] Preço extraído pelo método {metodo}: {preco_unitario}")
                                 else:
                                     print(f"[IGNORADO] Não foi possível extrair preço unitário para: {descricao_pdf}")
                                     continue
+
+                                desc_norm = normalizar_busca(descricao_pdf)
+
+                                # Ajuste especial para "asa"
+                                if preco_unitario is not None and "asa" in desc_norm:
+                                    preco_unitario = preco_unitario / 18
+                                elif preco_unitario is not None and "100m" in desc_norm:
+                                    preco_unitario = preco_unitario / 100
+                                    
+                                elif preco_unitario is not None and "65m" in desc_norm:
+                                    preco_unitario = preco_unitario / 65
 
                             desc_norm = normalizar_busca(descricao_pdf)
 
@@ -916,7 +966,7 @@ async def inserir_nota(produto: Produto):
 
 
 # Atualizar produto
-@app.route('/api/produto/<int:id>', methods=['DELETE'])
+@app.route('/api/produto/<id>', methods=['DELETE'])
 def delete_produto(id):
     try:
         conn = sqlite3.connect('produtos.db')
@@ -1001,46 +1051,223 @@ def get_divergencias(descricao):
         return jsonify({"status": "erro", "mensagem": str(e)}), 500
     finally:
         conn.close()
-@app.route('/api/divergencias/<int:id>', methods=['PUT'])
+
+
+@app.route('/api/divergencias/<id>', methods=['PUT'])
 def corrigir_divergencia(id):
     try:
         data = request.get_json()
         nome_corrigido = data.get("nome_corrigido")
-        codigo_corrigido = data.get("codigo_corrigido")  # vem do front (autocomplete)
 
-        if not nome_corrigido or not codigo_corrigido:
-            return jsonify({"status": "erro", "mensagem": "Nome e código corrigidos são obrigatórios"}), 400
+        if not nome_corrigido:
+            return jsonify({
+                "status": "erro",
+                "mensagem": "Nome corrigido é obrigatório"
+            }), 400
 
         conn = sqlite3.connect('produtos.db')
         cursor = conn.cursor()
 
-        # Atualiza divergência
+        # Atualiza divergência: salva o nome corrigido e marca como resolvido
         cursor.execute("""
             UPDATE divergencias
-            SET nome_corrigido = ?
+            SET nome_corrigido = ?,
+                resolvido = 1
             WHERE id = ?
         """, (nome_corrigido, id))
 
-        # Atualiza histórico para refletir o novo nome/código
+        # Atualiza histórico para refletir o novo nome
         cursor.execute("""
             UPDATE historico
-            SET descricao_produto = ?, codigo = ?
+            SET descricao_produto = ?
             WHERE descricao_produto = (
                 SELECT descricao_origem FROM divergencias WHERE id = ?
             )
-        """, (nome_corrigido, codigo_corrigido, id))
+        """, (nome_corrigido, id))
 
         conn.commit()
-        return jsonify({"status": "ok", "mensagem": "Divergência corrigida e histórico atualizado"})
+        return jsonify({
+            "status": "ok",
+            "mensagem": "Divergência corrigida, histórico atualizado e marcada como resolvida"
+        })
 
     except Exception as e:
+        print("Erro ao corrigir divergência:", e)
         return jsonify({"status": "erro", "mensagem": str(e)}), 500
     finally:
         conn.close()
 
 
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+DB = "produtos.db"
 
+def get_conn():
+    conn = sqlite3.connect(DB)
+    conn.row_factory = sqlite3.Row
+    return conn
 
+# -----------------------------
+# LISTAR FICHA TÉCNICA DE UM PRODUTO
+# -----------------------------
+@app.route("/api/fichas_tecnicas/<produto_final_id>", methods=["GET"])
+def get_ficha(produto_final_id):
+    try:
+        conn = sqlite3.connect("produtos.db")
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+
+        # Busca o nome do produto final
+        cur.execute("SELECT nome FROM produtos_finais WHERE id = ?", (produto_final_id,))
+        produto = cur.fetchone()
+        if not produto:
+            return jsonify({"erro": "Produto final não encontrado"}), 404
+
+        # Busca os itens da ficha técnica
+        cur.execute("""
+            SELECT ft.id, ft.materia_prima_id, ft.quantidade,
+                   mp.descricao_produto as materia_prima_nome, mp.unidade, mp.preco_unitario as preco_unitario
+            FROM fichas_tecnicas ft
+            JOIN materias_primas mp ON mp.codigo = ft.materia_prima_id
+            WHERE ft.produto_final_id = ?
+        """, (produto_final_id,))
+        rows = cur.fetchall()
+        conn.close()
+
+        materiais = [{
+            "id": r["id"],
+            "codigo": r["materia_prima_id"],
+            "nome": r["materia_prima_nome"],
+            "unidade": r["unidade"],
+            "valor": r["preco_unitario"],
+            "quantidade": r["quantidade"]
+        } for r in rows]
+
+        return jsonify({
+            "produto_final_id": produto_final_id,
+            "nome": produto["nome"],   # 👈 agora vem o nome do produto
+            "materiais": materiais
+        })
+    except Exception as e:
+        print("Erro no backend:", e)
+        return jsonify({"erro": "Falha interna no servidor"}), 500
+
+# -----------------------------
+# ATUALIZAR FICHA TÉCNICA DE UM PRODUTO
+# -----------------------------
+@app.route("/api/fichas_tecnicas/<produto_final_id>", methods=["PUT"])
+def update_ficha(produto_final_id):
+    data = request.get_json()
+    materias = data.get("materias", [])
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    # Apaga os registros antigos
+    cur.execute("DELETE FROM fichas_tecnicas WHERE produto_final_id = ?", (produto_final_id,))
+
+    # Insere os novos
+    for m in materias:
+        cur.execute("""
+            INSERT INTO fichas_tecnicas (produto_final_id, materia_prima_id, quantidade)
+            VALUES (?, ?, ?)
+        """, (
+            produto_final_id,
+            m.get("materiaPrima") or m.get("codigo"),
+            float(m.get("quantidade", 0))
+        ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"status": "ok"})
+
+# -----------------------------
+# DELETAR FICHA TÉCNICA DE UM PRODUTO
+# -----------------------------
+@app.route("/api/fichas_tecnicas/<produto_final_id>", methods=["DELETE"])
+def delete_ficha(produto_final_id):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM fichas_tecnicas WHERE produto_final_id = ?", (produto_final_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "ok"})
+
+# -----------------------------
+# CRIAR NOVA FICHA TÉCNICA
+# -----------------------------
+@app.route("/api/fichas_tecnicas", methods=["POST"])
+def create_ficha():
+    data = request.get_json()
+    produto_final_id = data.get("produto_final_id")
+    materias = data.get("materias", [])
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    for m in materias:
+        cur.execute("""
+            INSERT INTO fichas_tecnicas (produto_final_id, materia_prima_id, quantidade)
+            VALUES (?, ?, ?)
+        """, (
+            produto_final_id,
+            m.get("materiaPrima") or m.get("codigo"),
+            float(m.get("quantidade", 0))
+        ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"status": "ok"})
+
+@app.route('/api/materias/<codigo_antigo>', methods=['PUT'])
+def update_materia(codigo_antigo):
+    try:
+        data = request.get_json()
+        novo_nome = data.get("nome")
+        novo_codigo = data.get("codigo")
+
+        if not novo_nome or not novo_codigo:
+            return jsonify({"erro": "Nome e código são obrigatórios"}), 400
+
+        conn = sqlite3.connect("produtos.db")
+        cur = conn.cursor()
+
+        # pega nome antigo no historico
+        cur.execute("SELECT descricao_produto FROM historico WHERE codigo = ?", (codigo_antigo,))
+        row = cur.fetchone()
+        if not row:
+            return jsonify({"erro": "Matéria-prima não encontrada no histórico"}), 404
+        nome_antigo = row[0]
+
+        # atualiza historico (nome e código)
+        cur.execute("""
+            UPDATE historico
+            SET descricao_produto = ?, codigo = ?
+            WHERE codigo = ?
+        """, (novo_nome, novo_codigo, codigo_antigo))
+        print("Linhas afetadas no historico:", cur.rowcount)
+
+        # registra divergência como resolvida
+        cur.execute("""
+            UPDATE divergencias
+            SET nome_corrigido = ?, resolvido = 1
+            WHERE descricao_origem = ? AND (nome_corrigido IS NULL OR nome_corrigido = '')
+        """, (novo_nome, nome_antigo))
+
+        if cur.rowcount == 0:
+            cur.execute("""
+                INSERT INTO divergencias (descricao_origem, nome_corrigido, resolvido)
+                VALUES (?, ?, 1)
+            """, (nome_antigo, novo_nome))
+
+        conn.commit()
+        conn.close()
+        return jsonify({"status": "ok"})
+
+    except Exception as e:
+        print("Erro ao atualizar matéria-prima:", e)
+        return jsonify({"erro": str(e)}), 500
+    
+if __name__ == "__main__":
+    app.run(debug=True)
