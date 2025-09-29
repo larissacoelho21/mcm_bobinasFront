@@ -8,17 +8,10 @@ conn = sqlite3.connect("produtos.db")
 cur = conn.cursor()
 
 # Estrutura da tabela materias_primas
-cur.execute("PRAGMA table_info(materias_primas);")
-print("materias_primas:", cur.fetchall())
 
 # Estrutura da tabela historico
-cur.execute("PRAGMA table_info(historico);")
+cur.execute("UPDATE historico SET unidade = 'L' WHERE descricao_produto = 'VERNIZ';")
 print("historico:", cur.fetchall())
-
-# Estrutura da tabela divergencias
-cur.execute("PRAGMA table_info(divergencias);")
-print("divergencias:", cur.fetchall())
-
 
 
 conn.commit()

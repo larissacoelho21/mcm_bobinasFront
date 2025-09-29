@@ -497,25 +497,21 @@ def upload_file():
 
                         else:
                             for i in range(total_itens):
-                                preco_unitario = None  # 👈 PASSO 1: inicializa aqui
-
                                 codigo_pdf = codigos[i].strip() if i < len(codigos) else ""
                                 descricao_pdf = limpar_texto(descricoes[i]) if i < len(descricoes) else ""
                                 qtd = parse_num(quantidades[i]) if i < len(quantidades) else 0.0
                                 qtd = qtd or 0.0
-
+                                texto_filtrado = extrair_trecho_produtos(texto_pdf)                            # 🔽 Testa múltiplos métodos de extração de preço
                                 candidatos = []
                                 c1 = parse_num(valores_unit[i]) if i < len(valores_unit) else None
-                                if c1 is not None:
-                                    candidatos.append(("tabela", c1))
+                                if c1 is not None: candidatos.append(("tabela", c1))
 
                                 c2 = buscar_valor_por_palavra_chave(descricao_pdf, texto_pdf)
-                                if c2 is not None:
-                                    candidatos.append(("palavra-chave", c2))
+                                if c2 is not None: candidatos.append(("palavra-chave", c2))
 
                                 c3 = buscar_valor_por_regex(descricao_pdf, texto_pdf)
-                                if c3 is not None:
-                                    candidatos.append(("regex", c3))
+                                if c3 is not None: candidatos.append(("regex", c3))
+                                
 
                                 if candidatos:
                                     metodo, preco_unitario = candidatos[0]
