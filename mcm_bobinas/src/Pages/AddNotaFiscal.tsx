@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { toast } from 'sonner';
 
 import "../Css/AddNotaFiscal.css";
@@ -22,18 +21,20 @@ type CampoProduto = {
   unid: string;
   qtd: string;
   vlrUnit: string;
+  textoBusca: string;
 };
 
 export function AdicionarNotaFiscal() {
   const navigate = useNavigate();
 
   const [produtos, setProdutos] = useState<CampoProduto[]>([
-    { cod: "", nome: "", unid: "", qtd: "", vlrUnit: "" },
+    { cod: "", nome: "", unid: "", qtd: "", vlrUnit: "", textoBusca: "" },
   ]);
   const [produtosSalvos, setProdutosSalvos] = useState<ProdutoSalvo[]>([]);
   const [fornecedor, setFornecedor] = useState("");
   const [emissao, setEmissao] = useState("");
   const [valorTotalNota, setValorTotalNota] = useState("0.00");
+  const [campoAtivo, setCampoAtivo] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("http://localhost:5000/api/materias")
@@ -45,7 +46,7 @@ export function AdicionarNotaFiscal() {
   const handleAddProduto = () => {
     setProdutos([
       ...produtos,
-      { cod: "", nome: "", unid: "", qtd: "", vlrUnit: "" },
+      { cod: "", nome: "", unid: "", qtd: "", vlrUnit: "", textoBusca: "" },
     ]);
   };
 
@@ -65,25 +66,48 @@ export function AdicionarNotaFiscal() {
     const novosProdutos = [...produtos];
     novosProdutos[index][campo] = valor;
 
-    if (campo === "cod") {
-      const produtoEncontrado = produtosSalvos.find((p) => p.codigo === valor);
+    if (campo === "textoBusca") {
+      setCampoAtivo(index);
+
+      const produtoEncontrado = produtosSalvos.find((p) =>
+        p.nome.toLowerCase() === valor.toLowerCase()
+      );
+
       if (produtoEncontrado) {
         novosProdutos[index].nome = produtoEncontrado.nome;
+        novosProdutos[index].cod = produtoEncontrado.codigo;
         novosProdutos[index].vlrUnit = produtoEncontrado.valor.toString();
+
+        try {
+          const res = await fetch(`http://localhost:5000/api/unidades/${produtoEncontrado.codigo}`);
+          const dados = await res.json();
+          novosProdutos[index].unid = dados.unidade || "";
+        } catch (err) {
+          console.error("Erro ao buscar unidade:", err);
+          novosProdutos[index].unid = "";
+        }
       }
 
-      try {
-        const res = await fetch(`http://localhost:5000/api/unidades/${valor}`);
-        const dados = await res.json();
-        novosProdutos[index].unid = dados.unidade || "";
-      } catch (err) {
-        console.error("Erro ao buscar unidade:", err);
-        novosProdutos[index].unid = "";
+      setProdutos(novosProdutos);
+      return;
+    }
+
+    if (campo === "vlrUnit" || campo === "qtd") {
+      const qtd = campo === "qtd" ? parseFloat(valor) : parseFloat(novosProdutos[index].qtd);
+      const vlr = campo === "vlrUnit" ? parseFloat(valor) : parseFloat(novosProdutos[index].vlrUnit);
+
+      if (!isNaN(qtd) && !isNaN(vlr)) {
+        const total = produtos.reduce((acc, item, i) => {
+          const q = i === index ? qtd : parseFloat(item.qtd);
+          const v = i === index ? vlr : parseFloat(item.vlrUnit);
+          return acc + (isNaN(q) || isNaN(v) ? 0 : q * v);
+        }, 0);
+        setValorTotalNota(total.toFixed(2));
       }
     }
 
+    setCampoAtivo(null);
     setProdutos(novosProdutos);
-    calcularTotalNota(novosProdutos);
   };
 
   const calcularTotalNota = (lista: CampoProduto[]) => {
@@ -99,6 +123,11 @@ export function AdicionarNotaFiscal() {
     e.preventDefault();
 
     for (const produto of produtos) {
+      if (!produto.cod || !produto.nome || !produto.unid || !produto.qtd || !produto.vlrUnit) {
+        toast.warning("Preencha todos os campos da matéria-prima.");
+        return;
+      }
+
       const payload = {
         cod: produto.cod,
         nome: produto.nome,
@@ -110,7 +139,7 @@ export function AdicionarNotaFiscal() {
       };
 
       try {
-        const response = await fetch("http://localhost:5000/inserir-nota", {
+        const response = await fetch("http://localhost:5000/api/inserir-nota", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -121,7 +150,7 @@ export function AdicionarNotaFiscal() {
         }
       } catch (error) {
         console.error(error);
-        toast.error('Erro ao enviar nota fiscal')
+        toast.error('Erro ao enviar nota fiscal');
         return;
       }
     }
@@ -134,86 +163,93 @@ export function AdicionarNotaFiscal() {
     navigate(-1);
   };
 
+  const getSugestoes = (texto: string) => {
+    return produtosSalvos.filter((p) =>
+      p.nome.toLowerCase().includes(texto.toLowerCase())
+    );
+  };
+
   return (
     <section className="container">
-      <div className="nav">
-        <NavBar />
-      </div>
-
-      <div className="menu">
-        <MenuLateral />
-      </div>
+      <div className="nav"><NavBar /></div>
+      <div className="menu"><MenuLateral /></div>
 
       <div className="Container">
         <div className="title">
           <div className="img">
-            <img
-              src={Voltar}
-              alt="Voltar"
-              className="voltar"
-              onClick={handleVoltar}
-              style={{ cursor: "pointer" }}
-            />
+            <img src={Voltar} alt="Voltar" className="voltar" onClick={handleVoltar} style={{ cursor: "pointer" }} />
           </div>
-          <div className="title1">
-            <h2>Adicionar Nota Fiscal</h2>
-          </div>
+          <div className="title1"><h2>Adicionar Nota Fiscal</h2></div>
         </div>
 
         <form onSubmit={handleSubmit} className="formadd">
           <input type="text" placeholder="Chave de acesso" />
-          <input type="text" placeholder="Hora de entrada e saída" />
-          <input type="date" placeholder="Data de entrada e saída" />
-          <input
-            type="date"
-            placeholder="Data de emissão"
-            value={emissao}
-            onChange={(e) => setEmissao(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Nome do fornecedor"
-            value={fornecedor}
-            onChange={(e) => setFornecedor(e.target.value)}
-          />
-          <input type="date" placeholder="Vencimento" />
+          <input type="date" placeholder="Data de emissão" value={emissao} onChange={(e) => setEmissao(e.target.value)} />
+          <input type="text" placeholder="Nome do fornecedor" value={fornecedor} onChange={(e) => setFornecedor(e.target.value)} />
 
-          <h3>Dados da máteria prima</h3>
+          <h3>Dados da matéria prima</h3>
           {produtos.map((produto, index) => (
             <div key={index} className="campo-produto">
-              <input
-                type="text"
-                placeholder="Código"
-                value={produto.cod}
-                onChange={(e) =>
-                  handleProdutoChange(index, "cod", e.target.value)
-                }
-              />
-              <input
-                type="text"
-                placeholder="Nome"
-                value={produto.nome}
-                readOnly
-              />
+              <div className="autocomplete-wrapper">
+                <input
+                  type="text"
+                  placeholder="Nome da matéria-prima"
+                  value={produto.textoBusca}
+                  onChange={(e) => handleProdutoChange(index, "textoBusca", e.target.value)}
+                  onFocus={() => setCampoAtivo(index)}
+                />
+                {campoAtivo === index && produto.textoBusca && (
+                  <div className="sugestoes">
+                    {getSugestoes(produto.textoBusca).map((p, i) => (
+                      <div
+                        key={`sugestao-${p.codigo}-${i}`}
+                        className="sugestao"
+                        onClick={async () => {
+                          const novosProdutos = [...produtos];
+                          novosProdutos[index].textoBusca = p.nome;
+                          novosProdutos[index].nome = p.nome;
+                          novosProdutos[index].cod = p.codigo;
+                          novosProdutos[index].vlrUnit = p.valor.toString();
+
+                          try {
+                            const res = await fetch(`http://localhost:5000/api/unidades/${p.codigo}`);
+                            const dados = await res.json();
+                                                       novosProdutos[index].unid = dados.unidade || "";
+                          } catch (err) {
+                            console.error("Erro ao buscar unidade:", err);
+                            novosProdutos[index].unid = "";
+                          }
+
+                          setProdutos(novosProdutos);
+                          setCampoAtivo(null);
+                        }}
+                      >
+                        {p.nome}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <input
                 type="text"
                 placeholder="Unid"
-                value={produto.unid}
+                value={produto.unid ?? ""}
                 readOnly
               />
+
               <input
                 type="number"
                 placeholder="Qtde"
-                value={produto.qtd}
-                onChange={(e) =>
-                  handleProdutoChange(index, "qtd", e.target.value)
-                }
+                value={produto.qtd ?? ""}
+                onChange={(e) => handleProdutoChange(index, "qtd", e.target.value)}
               />
+
               <input
                 type="number"
                 placeholder="Vlr Unit"
-                value={produto.vlrUnit}
-                readOnly
+                value={produto.vlrUnit ?? ""}
+                onChange={(e) => handleProdutoChange(index, "vlrUnit", e.target.value)}
               />
             </div>
           ))}
@@ -222,7 +258,6 @@ export function AdicionarNotaFiscal() {
             <button type="button" onClick={handleAddProduto} className="add-btn">
               + Adicionar outra matéria prima
             </button>
-
             <button
               type="button"
               onClick={handleRemoveProduto}
@@ -236,22 +271,12 @@ export function AdicionarNotaFiscal() {
 
           <input type="number" placeholder="Peso Bruto" />
           <input type="number" placeholder="Peso Líquido" />
-
           <input
             type="number"
             placeholder="Valor total da nota"
             value={valorTotalNota}
             readOnly
           />
-
-          <select>
-            <option value="">Forma de pagamento</option>
-            <option value="pix">Pix</option>
-            <option value="boleto">Boleto</option>
-            <option value="cartao">Cartão</option>
-            <option value="dinheiro">Dinheiro</option>
-          </select>
-
           <button type="submit" className="submit-btn">
             Adicionar
           </button>
@@ -260,3 +285,4 @@ export function AdicionarNotaFiscal() {
     </section>
   );
 }
+

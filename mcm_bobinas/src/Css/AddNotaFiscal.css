@@ -88,7 +88,7 @@ div.Container {
 /* === PRODUTOS === */
 .campo-produto {
     display: grid;
-    grid-template-columns: 0.8fr 2fr 0.6fr 0.6fr 0.8fr;
+    grid-template-columns: 2fr 0.6fr 0.6fr 0.8fr;
     gap: 0.8vw;
     grid-column: 1 / -1; /* ocupa toda largura */
 }

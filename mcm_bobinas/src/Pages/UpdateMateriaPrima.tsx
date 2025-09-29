@@ -186,8 +186,7 @@ export function UpdateMateriaPrima() {
           <input
             type="text"
             value={precoUnitario ? `R$ ${parseFloat(precoUnitario).toFixed(2)}` : "R$ 0,00"}
-            readOnly
-            className="input readonly"
+            className="input"
           />
 
           <div className="botoes">

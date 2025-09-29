@@ -931,9 +931,9 @@ class Produto(BaseModel):
     fornecedor: str  # campo extra do formulário
     emissao: str  
 
-@app.post("/inserir-nota")
+@app.post("/api/inserir-nota")
 async def inserir_nota(produto: Produto):
-    conn = sqlite3.connect("notas.db")
+    conn = sqlite3.connect("produtos.db")
     cursor = conn.cursor()
 
     cursor.execute("""
