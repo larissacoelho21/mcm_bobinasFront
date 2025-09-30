@@ -86,7 +86,7 @@ export function UpdateMateriaPrima() {
       return;
     }
     try {
-      await axios.put(`http://localhost:5000/api/materias/${id}`, { nome, codigo });
+      await axios.put(`http://localhost:5000/api/materias/${id}`, { nome, codigo, preco_unitario: parseFloat(precoUnitario.replace(",", ".")) });
       toast.success("Matéria-prima atualizada com sucesso!");
       navigate("/visualizarmateria");
     } catch (error) {
@@ -185,9 +185,11 @@ export function UpdateMateriaPrima() {
           <label className="label">Preço unitário:</label>
           <input
             type="text"
-            value={precoUnitario ? `R$ ${parseFloat(precoUnitario).toFixed(2)}` : "R$ 0,00"}
+            value={precoUnitario}
+            onChange={(e) => setPrecoUnitario(e.target.value)}
             className="input"
           />
+
 
           <div className="botoes">
             <button type="button" className="remove-produto" onClick={handleDelete}>

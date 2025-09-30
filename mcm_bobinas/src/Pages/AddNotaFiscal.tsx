@@ -156,7 +156,7 @@ export function AdicionarNotaFiscal() {
     }
 
     toast.success("Nota fiscal enviada com sucesso!");
-    navigate("/notas");
+    navigate("/visualizarmateria");
   };
 
   const handleVoltar = () => {
